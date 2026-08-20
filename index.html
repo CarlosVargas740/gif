@@ -191,6 +191,13 @@
   .save-indicator.show{opacity:1;}
   .save-indicator .dot-save{width:6px; height:6px; border-radius:50%; background:var(--verde);}
 
+  .sync-badge{
+    font-size:11.5px; font-weight:700; color:rgba(255,255,255,.65); white-space:nowrap;
+    padding:5px 10px; border-radius:20px; background:rgba(255,255,255,.1);
+  }
+  .sync-badge.show{background:rgba(255,255,255,.18); color:#fff;}
+  .sync-badge.error{background:rgba(0,0,0,.18); color:#FFD9CE;}
+
   .toolbar-actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
   .search-field{position:relative; min-width:200px;}
   .search-field input{padding-left:30px;}
@@ -266,6 +273,10 @@
   .print-footer-note{font-size:9.5px; color:var(--gris); margin-top:16px; line-height:1.4;}
 </style>
 </head>
+<!-- Firebase: sincroniza el horario en tiempo real entre todos los dispositivos que abran esta página.
+     Sigue las instrucciones que Claude te dio para crear tu proyecto gratuito y pega aquí tu configuración. -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <body>
 <div class="app" id="app"></div>
 
@@ -276,6 +287,121 @@
 const DIAS = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
 const PUESTOS = ["Líder de Tienda","Encargado de Turno","Cajero/Auxiliar"];
 const STORAGE_KEY = "oxxo_horarios_state_v2";
+
+/* =========================================================
+   FIREBASE — sincronización en la nube entre dispositivos
+   =========================================================
+   1) Crea un proyecto gratis en https://console.firebase.google.com
+   2) Activa "Realtime Database" (modo de prueba está bien para empezar)
+   3) Copia tu configuración (Configuración del proyecto > tus apps > SDK) y pégala abajo,
+      reemplazando el objeto de ejemplo.
+   Mientras no cambies "TU_API_KEY", la app funciona solo con guardado local (como antes). */
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyD2ovIbKOjRbEgxexd6lzsqrdz2yp44Qyg",
+  authDomain: "horarios-oxxo.firebaseapp.com",
+  projectId: "horarios-oxxo",
+  storageBucket: "horarios-oxxo.firebasestorage.app",
+  messagingSenderId: "679113818307",
+  appId: "1:679113818307:web:68f492dc49f8eeeed62276",
+  measurementId: "G-8TKC326KCF"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+let db = null;
+let remoteRef = null;
+let firebaseReady = false;
+let suppressNextRemote = false;
+let pendingRemoteState = null;
+let firebaseSaveTimeout = null;
+let currentSyncStatus = "local";
+const SYNC_STATUS_MAP = {
+  local:        {icon:"📴", text:"Solo en este dispositivo", cls:""},
+  conectando:   {icon:"🔄", text:"Conectando…", cls:"show"},
+  sincronizando:{icon:"🔄", text:"Sincronizando…", cls:"show"},
+  sincronizado: {icon:"🌐", text:"Sincronizado con la nube", cls:"show"},
+  error:        {icon:"⚠️", text:"Sin conexión a la nube (guardado local)", cls:"show error"}
+};
+
+function initFirebaseSync(){
+  if(!window.firebase || !firebaseConfig || firebaseConfig.apiKey === "TU_API_KEY"){
+    setSyncBadge("local");
+    return;
+  }
+  try{
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    remoteRef = db.ref(STORAGE_KEY);
+    setSyncBadge("conectando");
+    remoteRef.on("value", snap=>{
+      const val = snap.val();
+      firebaseReady = true;
+      if(!val){ pushToFirebase(true); setSyncBadge("sincronizado"); return; }
+      if(suppressNextRemote){ suppressNextRemote = false; setSyncBadge("sincronizado"); return; }
+      applyRemoteState(val);
+      setSyncBadge("sincronizado");
+    }, err=>{
+      console.error("Firebase:", err);
+      setSyncBadge("error");
+    });
+  }catch(e){
+    console.error("No se pudo inicializar Firebase:", e);
+    setSyncBadge("error");
+  }
+}
+
+function applyRemoteState(remote){
+  const active = document.activeElement;
+  const isEditing = active && ["INPUT","SELECT","TEXTAREA"].includes(active.tagName);
+  if(isEditing){ pendingRemoteState = remote; return; }
+  state = Object.assign(defaultState(), remote);
+  state.operacion = Object.assign(defaultState().operacion, remote.operacion||{});
+  ensureHorarioShape();
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  render();
+}
+document.addEventListener("focusout", ()=>{
+  setTimeout(()=>{
+    if(pendingRemoteState && !["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName)){
+      const p = pendingRemoteState; pendingRemoteState = null;
+      applyRemoteState(p);
+    }
+  }, 60);
+}, true);
+
+function pushToFirebase(immediate){
+  if(!remoteRef) return;
+  clearTimeout(firebaseSaveTimeout);
+  const doPush = ()=>{
+    suppressNextRemote = true;
+    setSyncBadge("sincronizando");
+    remoteRef.set(state).then(()=> setSyncBadge("sincronizado")).catch(e=>{
+      console.error("Error al sincronizar:", e);
+      setSyncBadge("error");
+    });
+  };
+  if(immediate) doPush();
+  else firebaseSaveTimeout = setTimeout(doPush, 500);
+}
+
+function setSyncBadge(status){
+  currentSyncStatus = status;
+  const el = document.getElementById("syncBadge");
+  if(!el) return;
+  const s = SYNC_STATUS_MAP[status] || SYNC_STATUS_MAP.local;
+  el.textContent = `${s.icon} ${s.text}`;
+  el.className = "sync-badge " + s.cls;
+}
 
 function uid(){ return Math.random().toString(36).slice(2,9); }
 
@@ -343,6 +469,7 @@ let saveIndicatorTimeout = null;
 function saveState(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   catch(e){ console.error("No se pudo guardar en este equipo:", e); }
+  pushToFirebase(false);
   const ind = document.getElementById("saveIndicator");
   if(ind){
     ind.classList.add("show");
@@ -361,6 +488,7 @@ function loadState(){
   }catch(e){ /* sin datos guardados aún en este equipo */ }
   ensureHorarioShape();
   render();
+  initFirebaseSync();
 }
 
 /* =========================================================
@@ -663,6 +791,7 @@ function render(){
 }
 
 function renderHeader(){
+  const s = SYNC_STATUS_MAP[currentSyncStatus] || SYNC_STATUS_MAP.local;
   return `
   <div class="marquee">
     <div class="marquee-top">
@@ -674,6 +803,7 @@ function renderHeader(){
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:12px;">
+        <span class="sync-badge ${s.cls}" id="syncBadge">${s.icon} ${s.text}</span>
         <span class="save-indicator" id="saveIndicator"><span class="dot-save"></span>Guardado</span>
         <input class="store-input" id="tiendaInput" type="text" value="${escapeHtml(state.tienda)}" placeholder="Nombre de la sucursal">
       </div>
