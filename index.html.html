@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horarios OXXO</title>
+<style>
+  :root{
+    --rojo:#D8232A;
+    --rojo-oscuro:#8F1218;
+    --rojo-tinta:#5C0E12;
+    --crema:#FBF6EE;
+    --panel:#FFFFFF;
+    --tinta:#241B18;
+    --gris:#8A7C74;
+    --linea:#EAE0D2;
+    --amarillo:#FFC72C;
+    --azul-noche:#1F3A5F;
+    --naranja-mixto:#D9772E;
+    --verde:#2F7D5C;
+    --ambar:#B9770E;
+    --sombra: 0 2px 10px rgba(92,14,18,.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--crema);
+    color:var(--tinta);
+    font-family: ui-sans-serif, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:1220px;margin:0 auto;padding:0 0 60px;}
+
+  .marquee{
+    background: linear-gradient(180deg, var(--rojo) 0%, var(--rojo-oscuro) 100%);
+    padding:22px 24px 18px;
+    border-bottom:6px solid var(--amarillo);
+    position:relative;
+    overflow:hidden;
+  }
+  .marquee::after{
+    content:"";
+    position:absolute; right:-40px; top:-60px;
+    width:220px;height:220px;border-radius:50%;
+    background:rgba(255,255,255,.06);
+  }
+  .marquee-top{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .brandmark{display:flex; align-items:center; gap:10px;}
+  .brandtile{
+    width:40px;height:40px;border-radius:9px;background:var(--amarillo);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900; color:var(--rojo-tinta); font-size:18px; letter-spacing:-1px;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.15);
+  }
+  h1{color:#fff; margin:0; font-size:26px; letter-spacing:-.5px; font-weight:900;}
+  .subt{color:rgba(255,255,255,.85); margin:2px 0 0; font-size:13px;}
+  .store-input{
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.35);
+    border-radius:8px; color:#fff; padding:9px 12px; font-size:14px; font-weight:600;
+    min-width:220px;
+  }
+  .store-input::placeholder{color:rgba(255,255,255,.7);}
+
+  .tabs{display:flex; gap:4px; padding:14px 24px 0; flex-wrap:wrap;}
+  .tab{
+    background:transparent; border:none; cursor:pointer;
+    color:rgba(255,255,255,.75); font-weight:800; font-size:13.5px;
+    padding:10px 16px; border-radius:8px 8px 0 0; letter-spacing:.2px;
+  }
+  .tab.active{ background:var(--crema); color:var(--rojo-tinta);}
+  .tab:not(.active):hover{ background:rgba(255,255,255,.12); color:#fff;}
+
+  main{padding:22px 24px;}
+  .panel{
+    background:var(--panel); border-radius:14px; box-shadow:var(--sombra);
+    padding:20px 22px; margin-bottom:18px; border:1px solid var(--linea);
+  }
+  .panel h2{margin:0 0 4px; font-size:18px; letter-spacing:-.3px;}
+  .panel .hint{color:var(--gris); font-size:13px; margin:0 0 16px;}
+
+  button{font-family:inherit;}
+  .btn{
+    border:none; border-radius:8px; padding:9px 16px; font-weight:800; font-size:13.5px;
+    cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  }
+  .btn-primary{background:var(--rojo); color:#fff;}
+  .btn-primary:hover{background:var(--rojo-oscuro);}
+  .btn-ghost{background:transparent; color:var(--rojo-tinta); border:1.5px solid var(--linea);}
+  .btn-ghost:hover{border-color:var(--rojo);}
+  .btn-danger{background:transparent; color:#B23A3A;}
+  .btn-danger:hover{text-decoration:underline;}
+  .btn-sm{padding:5px 9px; font-size:12px; border-radius:6px;}
+  .btn-xs{padding:3px 7px; font-size:11px; border-radius:6px;}
+  .btn-amarillo{background:var(--amarillo); color:var(--rojo-tinta);}
+  .btn-amarillo:hover{filter:brightness(.95);}
+  .btn-outline-rest{background:#fff; color:var(--gris); border:1.5px solid var(--linea);}
+  .btn-outline-rest.active{background:#EFE7DA; color:var(--tinta); border-color:#D8C9AF;}
+
+  label{font-size:11.5px; font-weight:800; color:var(--gris); text-transform:uppercase; letter-spacing:.4px; display:block; margin-bottom:4px;}
+  input[type=text], input[type=time], input[type=number], select{
+    width:100%; padding:9px 10px; border:1.5px solid var(--linea); border-radius:8px;
+    font-size:13.5px; color:var(--tinta); background:#fff;
+  }
+  input:focus, select:focus{outline:2px solid var(--rojo); outline-offset:1px; border-color:var(--rojo);}
+
+  table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  th{text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--gris); padding:8px 8px; border-bottom:2px solid var(--linea);}
+  td{padding:9px 8px; border-bottom:1px solid var(--linea); vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .tag{display:inline-block; padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:800;}
+  .tag-lider{background:#F3E1E2; color:var(--rojo-tinta);}
+  .tag-encargado{background:#FFEFC7; color:#7A5300;}
+  .tag-cajero{background:#E4EFEA; color:var(--verde);}
+
+  .turno-card{
+    border:1.5px solid var(--linea); border-radius:12px; padding:14px 16px; margin-bottom:12px;
+    display:grid; grid-template-columns: 1.2fr .8fr .8fr .8fr 1fr auto; gap:12px; align-items:center;
+  }
+  .badge-tipo{
+    display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:20px; font-weight:800; font-size:12px; width:fit-content;
+  }
+  .badge-diurno{background:#FFF3D6; color:#8A5A00;}
+  .badge-nocturno{background:#E4EAF3; color:var(--azul-noche);}
+  .badge-mixto{background:#FBE7D6; color:var(--naranja-mixto);}
+  .dot{width:8px;height:8px;border-radius:50%;}
+  .dot-diurno{background:var(--amarillo);}
+  .dot-nocturno{background:var(--azul-noche);}
+  .dot-mixto{background:var(--naranja-mixto);}
+  .legal-ok{color:var(--verde); font-size:12px; font-weight:700;}
+  .legal-bad{color:#B23A3A; font-size:12px; font-weight:700;}
+
+  .law-box{
+    background:#FBF3E7; border:1px solid #F1DFC0; border-radius:10px; padding:14px 16px; font-size:12.8px; color:#5C4A2A; margin-top:6px;
+  }
+  .law-box b{color:#7A5300;}
+
+  .op-row{display:flex; gap:16px; align-items:end; flex-wrap:wrap; margin-top:6px;}
+  .op-field{min-width:140px;}
+  .op-check{display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--tinta); margin-bottom:9px;}
+
+  .toolbar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;}
+  .grid-wrap{overflow-x:auto;}
+  .sched-grid{width:100%; border-collapse:separate; border-spacing:8px;}
+  .sched-grid th{background:transparent; padding:0 0 4px 4px; border:none;}
+  .day-head{font-size:13px; font-weight:900; color:var(--rojo-tinta);}
+  .colab-label{font-size:12.5px; font-weight:800; color:var(--tinta); padding:8px 8px; white-space:nowrap; min-width:120px;}
+  .colab-label .small{display:block; font-weight:600; color:var(--gris); font-size:11px; margin-top:2px;}
+
+  .cell{
+    background:var(--crema); border:1.5px solid var(--linea); border-radius:10px; padding:8px; min-width:150px; vertical-align:top;
+  }
+  .cell.libre{border-style:dashed;}
+  .cell.descanso{background:#EFE7DA; border-color:#DED0B6;}
+  .cell.ilegal{background:#FBEAE9; border-color:#E7B2AE;}
+  .cell.legal{background:#EAF5EF; border-color:#CBE6D6;}
+  .time-row{display:flex; gap:4px; margin-bottom:6px;}
+  .time-row input{padding:5px 6px; font-size:12px;}
+  .cell-actions{display:flex; gap:5px; flex-wrap:wrap; margin-bottom:6px;}
+  .quick-select{font-size:11px; padding:4px 5px; border-radius:6px;}
+  .cell-badge{font-size:11px; font-weight:800;}
+  .cell-badge.ok{color:var(--verde);}
+  .cell-badge.bad{color:#B23A3A;}
+  .descanso-label{font-size:12px; font-weight:800; color:var(--gris); text-align:center; padding:10px 0;}
+
+  .issue{display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:10px; margin-bottom:8px; font-size:13.5px;}
+  .issue-error{background:#FBEAE9; color:#8A2A28;}
+  .issue-warning{background:#FFF4DE; color:#7A5300;}
+  .issue-info{background:#E8F0FB; color:#274470;}
+  .issue-ok{background:#E7F4EC; color:#1F6B49;}
+  .issue-icon{font-weight:900;}
+  .issue-more{color:var(--gris); font-size:12.5px; padding:4px 12px;}
+
+  .summary-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px;}
+  .colab-card{border:1.5px solid var(--linea); border-radius:12px; padding:12px 14px;}
+  .colab-card .nombre{font-weight:800; font-size:14px; margin-bottom:2px;}
+  .barwrap{background:#EFE7DA; border-radius:6px; height:8px; margin-top:8px; overflow:hidden;}
+  .bar{height:100%; border-radius:6px; background:var(--rojo);}
+  .bar.over{background:#B23A3A;}
+  .small{font-size:12px; color:var(--gris);}
+
+  .empty{color:var(--gris); font-size:13px; padding:14px 4px;}
+  ::placeholder{color:#B7ACA1;}
+  .footer-note{text-align:center; color:var(--gris); font-size:12px; margin-top:6px;}
+
+  /* ---------- Mejoras: indicador de guardado, toolbar avanzada, tabla fija ---------- */
+  .save-indicator{
+    display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--verde);
+    opacity:0; transition:opacity .35s ease; white-space:nowrap;
+  }
+  .save-indicator.show{opacity:1;}
+  .save-indicator .dot-save{width:6px; height:6px; border-radius:50%; background:var(--verde);}
+
+  .toolbar-actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .search-field{position:relative; min-width:200px;}
+  .search-field input{padding-left:30px;}
+  .search-field::before{
+    content:"🔎"; position:absolute; left:9px; top:50%; transform:translateY(-50%); font-size:12px; opacity:.6;
+  }
+
+  .grid-wrap{border-radius:12px;}
+  .sched-grid thead th{position:sticky; top:0; z-index:3; background:var(--crema); padding-bottom:6px;}
+  .sched-grid td.colab-label, .sched-grid th:first-child{
+    position:sticky; left:0; z-index:2; background:var(--crema);
+    box-shadow: 2px 0 6px rgba(92,14,18,.06);
+  }
+  .sched-grid thead th:first-child{ z-index:4; }
+  .colab-label{border-radius:10px;}
+
+  .day-col-head{display:flex; flex-direction:column; gap:4px; min-width:150px;}
+  .day-head-row{display:flex; align-items:center; justify-content:space-between; gap:6px;}
+  .day-copy-select{font-size:10.5px; padding:2px 3px; border-radius:6px; border:1.5px solid var(--linea); color:var(--gris); max-width:96px;}
+
+  .total-col{min-width:118px;}
+  .total-cell{
+    background:#fff; border:1.5px solid var(--linea); border-radius:10px; padding:10px 10px; text-align:center;
+  }
+  .total-cell .horas-num{font-weight:900; font-size:15px; color:var(--tinta);}
+  .total-cell .horas-max{font-size:11px; color:var(--gris); margin-top:1px;}
+  .total-cell .barwrap{margin-top:7px;}
+  .total-cell.over .horas-num{color:#B23A3A;}
+
+  .empty-search{color:var(--gris); font-size:13px; padding:20px 4px; text-align:center;}
+
+  @media print{
+    .save-indicator{display:none !important;}
+  }
+
+  /* ---------- Vista de impresión ---------- */
+  .print-only{display:none;}
+  @media print{
+    body{background:#fff;}
+    .marquee, .tabs, main > .panel, .footer-note{display:none !important;}
+    .print-only{display:block !important;}
+    @page{ size:landscape; margin:10mm; }
+    *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+  .print-page{padding:10px 4px; font-family: ui-sans-serif, "Segoe UI", Helvetica, Arial, sans-serif; color:var(--tinta);}
+  .print-head{display:flex; align-items:center; justify-content:space-between; border-bottom:4px solid var(--rojo); padding-bottom:10px; margin-bottom:14px;}
+  .print-brand{display:flex; align-items:center; gap:10px;}
+  .print-brandtile{width:36px;height:36px;border-radius:8px;background:var(--rojo); color:var(--amarillo); font-weight:900; font-size:16px; display:flex; align-items:center; justify-content:center;}
+  .print-title{font-size:20px; font-weight:900; letter-spacing:-.3px; margin:0;}
+  .print-sub{font-size:12px; color:var(--gris); margin:1px 0 0;}
+  .print-week{font-size:13px; font-weight:800; color:var(--rojo-tinta); text-align:right;}
+  .print-week .small{display:block; font-weight:600; color:var(--gris); margin-top:2px;}
+
+  .print-table{width:100%; border-collapse:collapse; font-size:11.5px;}
+  .print-table th{background:var(--rojo-tinta); color:#fff; text-align:left; padding:7px 8px; font-size:10.5px; text-transform:uppercase; letter-spacing:.3px;}
+  .print-table td{border:1px solid var(--linea); padding:6px 7px; vertical-align:top;}
+  .print-colab{font-weight:800; font-size:12px;}
+  .print-colab .small{display:block; font-weight:600; color:var(--gris); font-size:10px; margin-top:1px;}
+  .print-slot{border-radius:6px; padding:4px 6px; font-weight:800; font-size:11px; text-align:center;}
+  .print-diurno{background:#FFF3D6; color:#8A5A00; border:1px solid #F0D998;}
+  .print-nocturno{background:#E4EAF3; color:var(--azul-noche); border:1px solid #C7D3E8;}
+  .print-mixto{background:#FBE7D6; color:var(--naranja-mixto); border:1px solid #F0C79E;}
+  .print-descanso{background:#EFE7DA; color:var(--gris); text-align:center; font-weight:700; font-size:11px; padding:5px;}
+  .print-vacio{color:#C9BEB2; text-align:center; font-size:11px;}
+  .print-total{font-weight:900; text-align:center;}
+
+  .print-legend{display:flex; gap:18px; align-items:center; margin-top:12px; font-size:11px; flex-wrap:wrap;}
+  .print-legend .sw{display:inline-flex; align-items:center; gap:5px;}
+  .print-legend .box{width:11px;height:11px;border-radius:3px;}
+
+  .print-signs{display:flex; justify-content:space-between; margin-top:36px;}
+  .print-sign{width:30%; border-top:1px solid var(--tinta); padding-top:6px; font-size:11px; text-align:center; color:var(--gris);}
+  .print-footer-note{font-size:9.5px; color:var(--gris); margin-top:16px; line-height:1.4;}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+/* =========================================================
+   ESTADO
+========================================================= */
+const DIAS = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const PUESTOS = ["Líder de Tienda","Encargado de Turno","Cajero/Auxiliar"];
+const STORAGE_KEY = "oxxo_horarios_state_v2";
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+function defaultState(){
+  const c = (nombre,puesto)=>({id:uid(), nombre, puesto, maxHoras:48});
+  return {
+    tienda:"OXXO — Sucursal",
+    activeTab:"colaboradores",
+    semanaLabel:"",
+    filtroColab:"",
+    maxHorasSemana:48,
+    operacion:{ is24h:true, apertura:"06:00", cierre:"23:59" },
+    colaboradores:[
+      c("Ana Torres","Líder de Tienda"),
+      c("Luis Medina","Encargado de Turno"),
+      c("Karla Ruiz","Encargado de Turno"),
+      c("Jorge Salas","Cajero/Auxiliar"),
+      c("Paola Nuñez","Cajero/Auxiliar"),
+      c("Iván Cruz","Cajero/Auxiliar"),
+    ],
+    turnos:[
+      {id:"matutino", nombre:"Matutino", inicio:"07:00", fin:"15:00", minPersonal:2},
+      {id:"vespertino", nombre:"Vespertino", inicio:"15:00", fin:"23:00", minPersonal:2},
+      {id:"nocturno", nombre:"Nocturno", inicio:"23:00", fin:"07:00", minPersonal:2},
+    ],
+    // horario[dia][colabId] = { estado:'trabaja', inicio, fin }  |  { estado:'descanso' }
+    horario:{}
+  };
+}
+
+let state = defaultState();
+
+/* ---------- Deshacer (historial simple) ---------- */
+const HISTORY_LIMIT = 15;
+let undoStack = [];
+function snapshotForUndo(){
+  try{
+    undoStack.push(JSON.stringify(state));
+    if(undoStack.length > HISTORY_LIMIT) undoStack.shift();
+  }catch(e){ /* ignora si no se puede clonar */ }
+}
+function deshacer(){
+  if(undoStack.length === 0) return;
+  const prev = undoStack.pop();
+  try{
+    const parsed = JSON.parse(prev);
+    state = Object.assign(defaultState(), parsed);
+    state.operacion = Object.assign(defaultState().operacion, parsed.operacion||{});
+    ensureHorarioShape();
+    saveState();
+    render();
+  }catch(e){ /* ignora */ }
+}
+
+function ensureHorarioShape(){
+  for(let d=0; d<7; d++){
+    if(!state.horario[d]) state.horario[d] = {};
+    Object.keys(state.horario[d]).forEach(cid=>{
+      if(!state.colaboradores.find(c=>c.id===cid)) delete state.horario[d][cid];
+    });
+  }
+}
+
+let saveIndicatorTimeout = null;
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ console.error("No se pudo guardar en este equipo:", e); }
+  const ind = document.getElementById("saveIndicator");
+  if(ind){
+    ind.classList.add("show");
+    clearTimeout(saveIndicatorTimeout);
+    saveIndicatorTimeout = setTimeout(()=> ind.classList.remove("show"), 1400);
+  }
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      state = Object.assign(defaultState(), parsed);
+      state.operacion = Object.assign(defaultState().operacion, parsed.operacion||{});
+    }
+  }catch(e){ /* sin datos guardados aún en este equipo */ }
+  ensureHorarioShape();
+  render();
+}
+
+/* =========================================================
+   REGLAS LFT: diurno / nocturno / mixto
+========================================================= */
+function toMin(hhmm){ const [h,m] = hhmm.split(":").map(Number); return h*60+m; }
+function minToHHMM(min){
+  min = ((Math.round(min)%1440)+1440)%1440;
+  const h=Math.floor(min/60), m=min%60;
+  return String(h).padStart(2,'0')+":"+String(m).padStart(2,'0');
+}
+
+function calcTurno(inicio, fin){
+  let start = toMin(inicio);
+  let end = toMin(fin);
+  if(end <= start) end += 24*60;
+  const totalMin = end - start;
+  let nightMin = 0;
+  const step = 15;
+  for(let t=start; t<end; t+=step){
+    const m = t % (24*60);
+    const esNoche = (m >= 20*60) || (m < 6*60);
+    if(esNoche) nightMin += step;
+  }
+  nightMin = Math.min(nightMin, totalMin);
+  const dayMin = totalMin - nightMin;
+  const horas = totalMin/60;
+
+  let tipo, maxLegal;
+  if(nightMin === 0){ tipo = "Diurno"; maxLegal = 8; }
+  else if(dayMin === 0){ tipo = "Nocturno"; maxLegal = 7; }
+  else if(nightMin < 3.5*60){ tipo = "Mixto"; maxLegal = 7.5; }
+  else { tipo = "Nocturno"; maxLegal = 7; }
+
+  return { horas, tipo, nightHoras: nightMin/60, dayHoras: dayMin/60, maxLegal, esLegal: horas <= maxLegal + 0.001 };
+}
+
+function calcTotalColab(cid){
+  let total = 0, dias = 0;
+  for(let d=0; d<7; d++){
+    const e = (state.horario[d]||{})[cid];
+    if(e && e.estado==="trabaja" && e.inicio && e.fin){
+      total += calcTurno(e.inicio, e.fin).horas;
+      dias++;
+    }
+  }
+  return { total, dias };
+}
+
+/* =========================================================
+   ORGANIZADOR AUTOMÁTICO (usa las plantillas de turno como base,
+   pero cada asignación queda como horario propio editable)
+========================================================= */
+function autoOrganizar(){
+  ensureHorarioShape();
+  const hoursAssigned = {}; const daysWorked = {};
+  state.colaboradores.forEach(c=>{ hoursAssigned[c.id]=0; daysWorked[c.id]=0; });
+
+  for(let d=0; d<7; d++){ state.horario[d] = {}; }
+
+  for(let d=0; d<7; d++){
+    const asignadosHoy = new Set();
+    const turnosOrden = [...state.turnos];
+    if(d % 2 === 1) turnosOrden.reverse();
+
+    turnosOrden.forEach(t=>{
+      const info = calcTurno(t.inicio, t.fin);
+      let candidatos = state.colaboradores.filter(c=>{
+        const maxC = c.maxHoras || state.maxHorasSemana;
+        return !asignadosHoy.has(c.id) &&
+               (hoursAssigned[c.id] + info.horas) <= maxC + 0.001 &&
+               daysWorked[c.id] < 6;
+      });
+      candidatos.sort((a,b)=> hoursAssigned[a.id]-hoursAssigned[b.id]);
+
+      const seleccion = [];
+      const conMando = candidatos.find(c=>c.puesto !== "Cajero/Auxiliar");
+      if(conMando) seleccion.push(conMando);
+      for(const c of candidatos){
+        if(seleccion.length >= t.minPersonal) break;
+        if(!seleccion.find(s=>s.id===c.id)) seleccion.push(c);
+      }
+      const final = seleccion.slice(0, t.minPersonal);
+      final.forEach(c=>{
+        state.horario[d][c.id] = { estado:"trabaja", inicio:t.inicio, fin:t.fin };
+        asignadosHoy.add(c.id);
+        hoursAssigned[c.id] += info.horas;
+        daysWorked[c.id] += 1;
+      });
+    });
+  }
+
+  // marca explícitamente como descanso cualquier día sin asignación
+  for(let d=0; d<7; d++){
+    state.colaboradores.forEach(c=>{
+      if(!state.horario[d][c.id]) state.horario[d][c.id] = { estado:"descanso" };
+    });
+  }
+
+  saveState();
+  render();
+}
+
+/* =========================================================
+   COBERTURA: cuántas personas hay en tienda en cada minuto
+========================================================= */
+function buildCoverage(){
+  const coverage = Array.from({length:7}, ()=> new Array(1440).fill(0));
+  for(let d=0; d<7; d++){
+    state.colaboradores.forEach(c=>{
+      const entry = (state.horario[d]||{})[c.id];
+      if(!entry || entry.estado!=="trabaja" || !entry.inicio || !entry.fin) return;
+      let start = toMin(entry.inicio), end = toMin(entry.fin);
+      if(end<=start) end += 1440;
+      const localEnd = Math.min(end,1440);
+      for(let m=start; m<localEnd; m++) coverage[d][m]++;
+      if(end>1440 && d+1<7){
+        const overflow = end-1440;
+        for(let m=0; m<overflow; m++) coverage[d+1][m]++;
+      }
+    });
+  }
+  return coverage;
+}
+
+function operatingWindow(){
+  if(state.operacion.is24h) return {open:0, close:1440};
+  let open = toMin(state.operacion.apertura);
+  let close = toMin(state.operacion.cierre);
+  if(close<=open) close += 1440;
+  return {open, close};
+}
+
+/* =========================================================
+   VALIDACIÓN
+========================================================= */
+function validar(){
+  const issues = [];
+  ensureHorarioShape();
+
+  // 1) Huecos y "solo" en cobertura de horas reales
+  const coverage = buildCoverage();
+  const {open, close} = operatingWindow();
+  for(let d=0; d<7; d++){
+    const segEndDay1 = Math.min(close,1440);
+    scanSegment(d, coverage[d], open, segEndDay1, issues);
+    if(close>1440 && d+1<7){
+      scanSegment(d+1, coverage[d+1], 0, close-1440, issues);
+    }
+  }
+
+  // 2) Legalidad de cada asignación puntual
+  for(let d=0; d<7; d++){
+    state.colaboradores.forEach(c=>{
+      const e = (state.horario[d]||{})[c.id];
+      if(e && e.estado==="trabaja" && e.inicio && e.fin){
+        const info = calcTurno(e.inicio,e.fin);
+        if(!info.esLegal){
+          issues.push({tipo:"error", msg:`${c.nombre} — ${DIAS[d]} (${e.inicio}–${e.fin}): ${info.horas.toFixed(1)} h de jornada ${info.tipo.toLowerCase()}, supera el máximo legal de ${info.maxLegal} h.`});
+        }
+      }
+    });
+  }
+
+  // 3) Horas semanales y descanso por colaborador
+  state.colaboradores.forEach(c=>{
+    let totalHoras = 0, diasTrabajados = 0, tieneDescansoExplicito = false;
+    for(let d=0; d<7; d++){
+      const e = (state.horario[d]||{})[c.id];
+      if(e && e.estado==="trabaja" && e.inicio && e.fin){
+        totalHoras += calcTurno(e.inicio,e.fin).horas;
+        diasTrabajados++;
+      } else if(e && e.estado==="descanso"){
+        tieneDescansoExplicito = true;
+      }
+    }
+    const maxC = c.maxHoras || state.maxHorasSemana;
+    if(totalHoras > maxC + 0.001){
+      issues.push({tipo:"error", msg:`${c.nombre}: ${totalHoras.toFixed(1)} h en la semana, excede su máximo de ${maxC} h.`});
+    }
+    if(diasTrabajados >= 7){
+      issues.push({tipo:"error", msg:`${c.nombre}: trabaja los 7 días, sin día de descanso (obligatorio al menos 1 cada 6 días).`});
+    } else if(!tieneDescansoExplicito){
+      issues.push({tipo:"info", msg:`${c.nombre}: no tiene ningún día marcado explícitamente como "Descanso" — márcalo para que quede claro en el horario.`});
+    }
+  });
+
+  // 4) Presencia de mando (Líder/Encargado) por día
+  for(let d=0; d<7; d++){
+    const trabajanHoy = state.colaboradores.filter(c=>{
+      const e = (state.horario[d]||{})[c.id];
+      return e && e.estado==="trabaja";
+    });
+    if(trabajanHoy.length>0 && !trabajanHoy.some(c=>c.puesto!=="Cajero/Auxiliar")){
+      issues.push({tipo:"info", msg:`${DIAS[d]}: nadie con puesto de Líder o Encargado de Turno está trabajando ese día.`});
+    }
+  }
+
+  // 5) Plantillas de turno con jornada ilegal (referencia)
+  state.turnos.forEach(t=>{
+    const info = calcTurno(t.inicio,t.fin);
+    if(!info.esLegal){
+      issues.push({tipo:"warning", msg:`Plantilla "${t.nombre}" (${t.inicio}–${t.fin}) dura ${info.horas.toFixed(1)} h, supera el máximo legal de ${info.maxLegal} h para jornada ${info.tipo.toLowerCase()}.`});
+    }
+  });
+
+  const errores = issues.filter(i=>i.tipo==="error");
+  const advertencias = issues.filter(i=>i.tipo==="warning");
+  const info = issues.filter(i=>i.tipo==="info");
+  const ordenado = [...errores, ...advertencias, ...info];
+
+  if(ordenado.length === 0){
+    ordenado.push({tipo:"ok", msg:"Todo en orden: cobertura completa, nadie solo, jornadas legales y descansos definidos."});
+  }
+  return ordenado;
+}
+
+function scanSegment(dayIdx, coverageArr, startMin, endMin, issues){
+  let i = Math.max(0,startMin);
+  const end = Math.min(1440,endMin);
+  let count = 0;
+  while(i<end){
+    const cnt = coverageArr[i];
+    let j = i;
+    while(j<end && coverageArr[j]===cnt) j++;
+    const dur = j-i;
+    if(dur>=15 && count<6){
+      if(cnt===0){
+        issues.push({tipo:"error", msg:`${DIAS[dayIdx]} ${minToHHMM(i)}–${minToHHMM(j)}: sin nadie en tienda (turno descubierto).`});
+        count++;
+      } else if(cnt===1){
+        issues.push({tipo:"warning", msg:`${DIAS[dayIdx]} ${minToHHMM(i)}–${minToHHMM(j)}: solo una persona en tienda.`});
+        count++;
+      }
+    }
+    i = j;
+  }
+}
+
+/* =========================================================
+   RENDER
+========================================================= */
+/* ---------- Utilidades para no perder scroll/foco al re-dibujar ---------- */
+function getActiveSelector(){
+  const el = document.activeElement;
+  if(!el || el === document.body || !el.tagName) return null;
+  const tag = el.tagName.toLowerCase();
+  if(tag!=="input" && tag!=="select" && tag!=="button" && tag!=="textarea") return null;
+  const cls = el.className ? "."+String(el.className).trim().split(/\s+/).join(".") : "";
+  const dataAttrs = Array.from(el.attributes).filter(a=>a.name.startsWith("data-"));
+  const dataSel = dataAttrs.map(a=>`[${a.name}="${(a.value||"").replace(/"/g,'\\"')}"]`).join("");
+  const idSel = el.id ? `#${el.id}` : "";
+  if(!idSel && !dataSel) return null;
+  return `${idSel}${tag}${cls}${dataSel}`;
+}
+
+function render(){
+  // Guarda posición de scroll (página + scroll horizontal de la grilla) y el elemento con foco,
+  // para restaurarlos después de redibujar y evitar que la pantalla "brinque" al editar horarios.
+  const scrollY = window.scrollY;
+  const scrollX = window.scrollX;
+  const gridWrapBefore = document.querySelector(".grid-wrap");
+  const gridScrollLeft = gridWrapBefore ? gridWrapBefore.scrollLeft : 0;
+  const gridScrollTop = gridWrapBefore ? gridWrapBefore.scrollTop : 0;
+  const activeSelector = getActiveSelector();
+  const activeEl = document.activeElement;
+  const selStart = activeEl && "selectionStart" in activeEl ? activeEl.selectionStart : null;
+  const selEnd = activeEl && "selectionEnd" in activeEl ? activeEl.selectionEnd : null;
+
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    ${renderHeader()}
+    <main>${renderTab()}</main>
+    <p class="footer-note">Basado en la Ley Federal del Trabajo (MX) — jornada diurna 6:00–20:00 (máx. 8h), nocturna 20:00–6:00 (máx. 7h), mixta (máx. 7.5h, con menos de 3.5h en horario nocturno). Verifica siempre las políticas internas de OXXO/FEMSA vigentes.</p>
+    ${renderPrintArea()}
+  `;
+  wireEvents();
+
+  // Restaura scroll y foco después de que el navegador aplique el nuevo DOM
+  requestAnimationFrame(()=>{
+    window.scrollTo(scrollX, scrollY);
+    const gridWrapAfter = document.querySelector(".grid-wrap");
+    if(gridWrapAfter){
+      gridWrapAfter.scrollLeft = gridScrollLeft;
+      gridWrapAfter.scrollTop = gridScrollTop;
+    }
+    if(activeSelector){
+      try{
+        const newEl = document.querySelector(activeSelector);
+        if(newEl){
+          newEl.focus({preventScroll:true});
+          if(selStart!=null && newEl.setSelectionRange){
+            try{ newEl.setSelectionRange(selStart, selEnd); }catch(e){}
+          }
+        }
+      }catch(e){ /* selector inválido, ignora */ }
+    }
+    window.scrollTo(scrollX, scrollY);
+  });
+}
+
+function renderHeader(){
+  return `
+  <div class="marquee">
+    <div class="marquee-top">
+      <div class="brandmark">
+        <div class="brandtile">OX</div>
+        <div>
+          <h1>Horarios de Colaboradores</h1>
+          <p class="subt">Planeador de turnos estilo tienda de conveniencia</p>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="save-indicator" id="saveIndicator"><span class="dot-save"></span>Guardado</span>
+        <input class="store-input" id="tiendaInput" type="text" value="${escapeHtml(state.tienda)}" placeholder="Nombre de la sucursal">
+      </div>
+    </div>
+    <div class="tabs">
+      ${tabBtn("colaboradores","Colaboradores")}
+      ${tabBtn("turnos","Plantillas y reglas")}
+      ${tabBtn("horario","Horario semanal")}
+      ${tabBtn("resumen","Resumen y validación")}
+    </div>
+  </div>`;
+}
+function tabBtn(id,label){
+  return `<button class="tab ${state.activeTab===id?'active':''}" data-tab="${id}">${label}</button>`;
+}
+
+function renderTab(){
+  if(state.activeTab==="colaboradores") return renderColaboradores();
+  if(state.activeTab==="turnos") return renderTurnos();
+  if(state.activeTab==="horario") return renderHorario();
+  return renderResumen();
+}
+
+/* ---------------- Colaboradores ---------------- */
+function renderColaboradores(){
+  const rows = state.colaboradores.map(c=>`
+    <tr>
+      <td><input type="text" class="colab-nombre" data-id="${c.id}" value="${escapeHtml(c.nombre)}"></td>
+      <td>
+        <select class="colab-puesto" data-id="${c.id}">
+          ${PUESTOS.map(p=>`<option value="${p}" ${c.puesto===p?'selected':''}>${p}</option>`).join("")}
+        </select>
+      </td>
+      <td><input type="number" min="1" max="60" class="colab-horas" data-id="${c.id}" value="${c.maxHoras}" style="width:80px"></td>
+      <td><button class="btn btn-danger btn-sm" data-del-colab="${c.id}">Eliminar</button></td>
+    </tr>
+  `).join("");
+
+  return `
+  <div class="panel">
+    <h2>Colaboradores</h2>
+    <p class="hint">Registra al equipo de la tienda: puesto y horas máximas por semana (LFT: 48h). Los horarios de entrada y salida de cada quien se asignan día por día en la pestaña "Horario semanal".</p>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Nombre</th><th>Puesto</th><th>Máx. h/sem</th><th></th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="4" class="empty">Aún no hay colaboradores.</td></tr>`}</tbody>
+    </table>
+    </div>
+    <div style="margin-top:14px">
+      <button class="btn btn-primary" id="addColab">+ Agregar colaborador</button>
+    </div>
+  </div>`;
+}
+
+/* ---------------- Turnos / plantillas ---------------- */
+function renderTurnos(){
+  const cards = state.turnos.map(t=>{
+    const info = calcTurno(t.inicio, t.fin);
+    const badgeClass = info.tipo==="Diurno"?"badge-diurno":info.tipo==="Nocturno"?"badge-nocturno":"badge-mixto";
+    const dotClass = info.tipo==="Diurno"?"dot-diurno":info.tipo==="Nocturno"?"dot-nocturno":"dot-mixto";
+    return `
+    <div class="turno-card">
+      <div>
+        <label>Nombre de la plantilla</label>
+        <input type="text" class="turno-nombre" data-id="${t.id}" value="${escapeHtml(t.nombre)}">
+      </div>
+      <div>
+        <label>Entrada</label>
+        <input type="time" class="turno-inicio" data-id="${t.id}" value="${t.inicio}">
+      </div>
+      <div>
+        <label>Salida</label>
+        <input type="time" class="turno-fin" data-id="${t.id}" value="${t.fin}">
+      </div>
+      <div>
+        <label>Mínimo personal</label>
+        <input type="number" min="1" max="6" class="turno-min" data-id="${t.id}" value="${t.minPersonal}">
+      </div>
+      <div>
+        <label>Clasificación</label>
+        <span class="badge-tipo ${badgeClass}"><span class="dot ${dotClass}"></span>${info.tipo} · ${info.horas.toFixed(1)} h</span>
+        <div style="margin-top:4px" class="${info.esLegal?'legal-ok':'legal-bad'}">
+          ${info.esLegal ? "Dentro del límite legal (máx. "+info.maxLegal+"h)" : "Excede el máximo legal de "+info.maxLegal+"h"}
+        </div>
+      </div>
+      <div><button class="btn btn-danger btn-sm" data-del-turno="${t.id}">Eliminar</button></div>
+    </div>`;
+  }).join("");
+
+  const op = state.operacion;
+
+  return `
+  <div class="panel">
+    <h2>Plantillas rápidas de turno</h2>
+    <p class="hint">Estas plantillas (Matutino, Vespertino, Nocturno...) son solo atajos para llenar el horario más rápido — en "Horario semanal" puedes editar la hora exacta de entrada y salida de cada colaborador cualquier día, aunque no coincida con estas plantillas.</p>
+    ${cards || `<p class="empty">No hay plantillas configuradas.</p>`}
+    <button class="btn btn-primary" id="addTurno" style="margin-top:6px">+ Agregar plantilla</button>
+
+    <div class="law-box" style="margin-top:18px">
+      <b>Reglas de jornada (Ley Federal del Trabajo, México):</b><br>
+      • <b>Diurna</b>: 6:00–20:00 hrs — máximo <b>8 horas</b>.<br>
+      • <b>Nocturna</b>: 20:00–6:00 hrs — máximo <b>7 horas</b>.<br>
+      • <b>Mixta</b>: combina horas de día y de noche en el mismo turno, con menos de <b>3.5 horas</b> en horario nocturno — máximo <b>7.5 horas</b>. Si la parte nocturna llega a 3.5 h o más, la jornada se considera nocturna.<br>
+      Todo colaborador debe tener al menos <b>1 día de descanso</b> por cada 6 días trabajados. Por seguridad, procura que nadie quede solo en tienda en ningún horario.
+    </div>
+
+    <div style="margin-top:14px">
+      <label>Máximo de horas semanales por defecto para nuevos colaboradores</label>
+      <input type="number" id="maxHorasDefault" min="1" max="60" value="${state.maxHorasSemana}" style="width:120px">
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Horario de operación de la tienda</h2>
+    <p class="hint">Se usa para revisar que todas las horas en que la tienda está abierta queden cubiertas por al menos una persona.</p>
+    <div class="op-row">
+      <label class="op-check"><input type="checkbox" id="op24h" ${op.is24h?'checked':''}> Tienda abierta 24 horas</label>
+      <div class="op-field">
+        <label>Hora de apertura</label>
+        <input type="time" id="opApertura" value="${op.apertura}" ${op.is24h?'disabled':''}>
+      </div>
+      <div class="op-field">
+        <label>Hora de cierre</label>
+        <input type="time" id="opCierre" value="${op.cierre}" ${op.is24h?'disabled':''}>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- Horario semanal ---------------- */
+function renderHorario(){
+  ensureHorarioShape();
+
+  const filtro = (state.filtroColab||"").trim().toLowerCase();
+  const colabsVisibles = filtro
+    ? state.colaboradores.filter(c=> c.nombre.toLowerCase().includes(filtro))
+    : state.colaboradores;
+
+  const dayCopyOptions = (excludeIdx)=> DIAS.map((d,i)=> i===excludeIdx ? "" : `<option value="${i}">${d}</option>`).join("");
+
+  const headRow = `<tr>
+    <th></th>
+    ${DIAS.map((d,i)=>`<th class="day-head">
+      <div class="day-col-head">
+        <div class="day-head-row"><span>${d}</span></div>
+        <select class="day-copy-select" data-day-copy="${i}" title="Copiar el horario de ${d} a otro día">
+          <option value="">Copiar a…</option>
+          ${dayCopyOptions(i)}
+        </select>
+      </div>
+    </th>`).join("")}
+    <th class="day-head total-col">Total semana</th>
+  </tr>`;
+
+  const rows = colabsVisibles.map(c=>{
+    const puestoClass = c.puesto==="Líder de Tienda"?"tag-lider":c.puesto==="Encargado de Turno"?"tag-encargado":"tag-cajero";
+    const cells = DIAS.map((_,d)=>{
+      const entry = (state.horario[d] && state.horario[d][c.id]) || null;
+      const key = d+"|"+c.id;
+      const quickOptions = state.turnos.map(t=>`<option value="${t.id}">${escapeHtml(t.nombre)} (${t.inicio}–${t.fin})</option>`).join("");
+
+      if(entry && entry.estado==="descanso"){
+        return `<td><div class="cell descanso">
+          <div class="descanso-label">😴 Descanso</div>
+          <div class="cell-actions">
+            <button class="btn btn-xs btn-ghost" data-set-trabaja="${key}">Poner horario</button>
+          </div>
+        </div></td>`;
+      }
+
+      if(entry && entry.estado==="trabaja"){
+        const info = calcTurno(entry.inicio, entry.fin);
+        const legalClass = info.esLegal ? "legal" : "ilegal";
+        return `<td><div class="cell ${legalClass}">
+          <div class="time-row">
+            <input type="time" class="cell-inicio" data-key="${key}" value="${entry.inicio}">
+            <input type="time" class="cell-fin" data-key="${key}" value="${entry.fin}">
+          </div>
+          <div class="cell-badge ${info.esLegal?'ok':'bad'}">${info.tipo} · ${info.horas.toFixed(1)}h ${info.esLegal?'✓':'⚠ máx '+info.maxLegal+'h'}</div>
+          <div class="cell-actions" style="margin-top:6px">
+            <select class="quick-select" data-quick="${key}"><option value="">plantilla…</option>${quickOptions}</select>
+            <button class="btn btn-xs btn-outline-rest" data-set-descanso="${key}">Descanso</button>
+          </div>
+        </div></td>`;
+      }
+
+      return `<td><div class="cell libre">
+        <div class="small" style="margin-bottom:6px">Sin asignar</div>
+        <div class="cell-actions">
+          <select class="quick-select" data-quick="${key}"><option value="">plantilla…</option>${quickOptions}</select>
+        </div>
+        <div class="cell-actions" style="margin-top:6px">
+          <button class="btn btn-xs btn-ghost" data-set-trabaja="${key}">Poner horario</button>
+          <button class="btn btn-xs btn-outline-rest" data-set-descanso="${key}">Descanso</button>
+        </div>
+      </div></td>`;
+    }).join("");
+
+    const { total, dias } = calcTotalColab(c.id);
+    const maxC = c.maxHoras || state.maxHorasSemana;
+    const over = total > maxC + 0.001;
+    const pct = Math.min(100, (total/maxC)*100);
+
+    return `<tr>
+      <td class="colab-label">${escapeHtml(c.nombre)}<span class="tag ${puestoClass}" style="margin-top:4px">${c.puesto}</span></td>
+      ${cells}
+      <td class="total-col">
+        <div class="total-cell ${over?'over':''}">
+          <div class="horas-num">${total.toFixed(1)} h</div>
+          <div class="horas-max">de ${maxC} h · ${dias} día(s)</div>
+          <div class="barwrap"><div class="bar ${over?'over':''}" style="width:${pct}%"></div></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+
+  const sinResultados = filtro && colabsVisibles.length===0;
+
+  return `
+  <div class="panel">
+    <div class="toolbar">
+      <div>
+        <h2 style="margin-bottom:2px">Horario semanal</h2>
+        <p class="hint" style="margin-bottom:0">Pon la hora de entrada y salida exacta de cada colaborador cada día — no tienen que coincidir con Matutino/Vespertino/Nocturno. La app clasifica el tipo de jornada y valida el máximo legal al instante. Usa "Descanso" para marcar sus días libres.</p>
+      </div>
+      <div class="toolbar-actions">
+        <div class="search-field">
+          <input type="text" id="filtroColabInput" placeholder="Buscar colaborador…" value="${escapeHtml(state.filtroColab)}">
+        </div>
+        <div style="min-width:170px">
+          <label>Semana (para imprimir)</label>
+          <input type="text" id="semanaLabelInput" placeholder="Ej. 18–24 ago 2026" value="${escapeHtml(state.semanaLabel)}">
+        </div>
+        <button class="btn btn-ghost" id="deshacerBtn" ${undoStack.length===0?'disabled style="opacity:.45; cursor:not-allowed;"':''}>↩️ Deshacer</button>
+        <button class="btn btn-ghost" id="exportarCsv">⬇️ Exportar CSV</button>
+        <button class="btn btn-ghost" id="clearHorario">Vaciar horario</button>
+        <button class="btn btn-ghost" id="imprimirHorario">🖨️ Imprimir / PDF</button>
+        <button class="btn btn-amarillo" id="autoOrganizar">⚡ Organizar automáticamente</button>
+      </div>
+    </div>
+    <div class="grid-wrap">
+      <table class="sched-grid">
+        <thead>${headRow}</thead>
+        <tbody>${
+          sinResultados
+            ? `<tr><td colspan="9" class="empty-search">Ningún colaborador coincide con "${escapeHtml(state.filtroColab)}".</td></tr>`
+            : (rows || `<tr><td colspan="9" class="empty">Agrega colaboradores primero.</td></tr>`)
+        }</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ---------------- Resumen y validación ---------------- */
+function renderResumen(){
+  const issues = validar();
+  const MAX_SHOW = 40;
+  const mostrar = issues.slice(0, MAX_SHOW);
+  const iconFor = t=> t==="error"?"⛔":t==="warning"?"⚠️":t==="info"?"ℹ️":"✅";
+  const issuesHtml = mostrar.map(i=>`
+    <div class="issue issue-${i.tipo}"><span class="issue-icon">${iconFor(i.tipo)}</span><span>${i.msg}</span></div>
+  `).join("") + (issues.length>MAX_SHOW ? `<div class="issue-more">y ${issues.length-MAX_SHOW} observación(es) más…</div>` : "");
+
+  const maxSemana = state.maxHorasSemana;
+  const cards = state.colaboradores.map(c=>{
+    let total = 0, dias=0;
+    for(let d=0; d<7; d++){
+      const e = (state.horario[d]||{})[c.id];
+      if(e && e.estado==="trabaja" && e.inicio && e.fin){ total += calcTurno(e.inicio,e.fin).horas; dias++; }
+    }
+    const maxC = c.maxHoras || maxSemana;
+    const pct = Math.min(100, (total/maxC)*100);
+    const over = total > maxC + 0.001;
+    const puestoClass = c.puesto==="Líder de Tienda"?"tag-lider":c.puesto==="Encargado de Turno"?"tag-encargado":"tag-cajero";
+    return `
+    <div class="colab-card">
+      <div class="nombre">${escapeHtml(c.nombre)}</div>
+      <span class="tag ${puestoClass}">${c.puesto}</span>
+      <div class="small" style="margin-top:8px">${total.toFixed(1)} h de ${maxC} h · ${dias} día(s) trabajados</div>
+      <div class="barwrap"><div class="bar ${over?'over':''}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join("");
+
+  return `
+  <div class="panel">
+    <h2>Validación del horario</h2>
+    <p class="hint">Con base en las horas exactas que capturaste: cobertura real minuto a minuto, colaboradores solos, jornadas fuera de la ley y descansos.</p>
+    ${issuesHtml}
+  </div>
+  <div class="panel">
+    <h2>Horas por colaborador</h2>
+    <p class="hint">Carga semanal de cada persona frente a su máximo permitido.</p>
+    <div class="summary-grid">${cards || `<p class="empty">No hay colaboradores registrados.</p>`}</div>
+  </div>`;
+}
+
+/* ---------------- Vista de impresión ---------------- */
+function renderPrintArea(){
+  const rows = state.colaboradores.map(c=>{
+    let total = 0;
+    const cells = DIAS.map((_,d)=>{
+      const e = (state.horario[d]||{})[c.id];
+      if(e && e.estado==="trabaja" && e.inicio && e.fin){
+        const info = calcTurno(e.inicio,e.fin);
+        total += info.horas;
+        const cls = info.tipo==="Diurno"?"print-diurno":info.tipo==="Nocturno"?"print-nocturno":"print-mixto";
+        return `<td><div class="print-slot ${cls}">${e.inicio}–${e.fin}<br>${info.tipo}</div></td>`;
+      }
+      if(e && e.estado==="descanso"){
+        return `<td><div class="print-descanso">Descanso</div></td>`;
+      }
+      return `<td><div class="print-vacio">—</div></td>`;
+    }).join("");
+    return `<tr>
+      <td class="print-colab">${escapeHtml(c.nombre)}<span class="small">${c.puesto}</span></td>
+      ${cells}
+      <td class="print-total">${total.toFixed(1)} h</td>
+    </tr>`;
+  }).join("");
+
+  const hoy = new Date();
+  const generado = hoy.toLocaleDateString("es-MX", {day:"numeric", month:"long", year:"numeric"});
+
+  return `
+  <div class="print-only">
+    <div class="print-page">
+      <div class="print-head">
+        <div class="print-brand">
+          <div class="print-brandtile">OX</div>
+          <div>
+            <p class="print-title">${escapeHtml(state.tienda || "Tienda OXXO")}</p>
+            <p class="print-sub">Horario semanal de colaboradores</p>
+          </div>
+        </div>
+        <div class="print-week">
+          ${escapeHtml(state.semanaLabel) || "Semana actual"}
+          <span class="small">Generado el ${generado}</span>
+        </div>
+      </div>
+
+      <table class="print-table">
+        <thead>
+          <tr>
+            <th>Colaborador</th>
+            ${DIAS.map(d=>`<th>${d}</th>`).join("")}
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows || `<tr><td colspan="9" style="text-align:center; color:#B7ACA1; padding:14px;">Sin colaboradores registrados</td></tr>`}
+        </tbody>
+      </table>
+
+      <div class="print-legend">
+        <span class="sw"><span class="box" style="background:#FFF3D6; border:1px solid #F0D998;"></span>Diurno (máx. 8h)</span>
+        <span class="sw"><span class="box" style="background:#E4EAF3; border:1px solid #C7D3E8;"></span>Nocturno (máx. 7h)</span>
+        <span class="sw"><span class="box" style="background:#FBE7D6; border:1px solid #F0C79E;"></span>Mixto (máx. 7.5h)</span>
+        <span class="sw"><span class="box" style="background:#EFE7DA;"></span>Descanso</span>
+      </div>
+
+      <div class="print-signs">
+        <div class="print-sign">Líder de Tienda</div>
+        <div class="print-sign">Encargado de Turno</div>
+        <div class="print-sign">Fecha de publicación</div>
+      </div>
+
+      <p class="print-footer-note">Horario elaborado conforme a la Ley Federal del Trabajo (jornada diurna máx. 8h, nocturna máx. 7h, mixta máx. 7.5h). Cualquier cambio debe notificarse con anticipación al colaborador.</p>
+    </div>
+  </div>`;
+}
+
+/* ---------------- Exportar CSV ---------------- */
+function csvField(v){
+  const s = String(v ?? "");
+  return /[",\n;]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+}
+function exportarHorarioCSV(){
+  const header = ["Colaborador","Puesto", ...DIAS, "Total horas"];
+  const lines = [header.map(csvField).join(",")];
+  state.colaboradores.forEach(c=>{
+    const dayVals = DIAS.map((_,d)=>{
+      const e = (state.horario[d]||{})[c.id];
+      if(e && e.estado==="trabaja" && e.inicio && e.fin) return `${e.inicio}-${e.fin}`;
+      if(e && e.estado==="descanso") return "Descanso";
+      return "";
+    });
+    const { total } = calcTotalColab(c.id);
+    lines.push([c.nombre, c.puesto, ...dayVals, total.toFixed(1)].map(csvField).join(","));
+  });
+  const csv = "\uFEFF" + lines.join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const nombreArchivo = (state.tienda||"horario").replace(/[^a-z0-9\-_ ]/gi,"").trim().replace(/\s+/g,"_") || "horario";
+  a.href = url;
+  a.download = `${nombreArchivo}_horario.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function escapeHtml(s){
+  return String(s ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+
+/* =========================================================
+   EVENTOS
+========================================================= */
+function wireEvents(){
+  document.querySelectorAll("[data-tab]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{ state.activeTab = btn.dataset.tab; render(); });
+  });
+
+  const tiendaInput = document.getElementById("tiendaInput");
+  if(tiendaInput) tiendaInput.addEventListener("change", e=>{ state.tienda = e.target.value; saveState(); });
+
+  // Colaboradores
+  const addColab = document.getElementById("addColab");
+  if(addColab){
+    addColab.addEventListener("click", ()=>{
+      state.colaboradores.push({id:uid(), nombre:"Nuevo colaborador", puesto:"Cajero/Auxiliar", maxHoras: state.maxHorasSemana});
+      ensureHorarioShape(); saveState(); render();
+    });
+  }
+  document.querySelectorAll("[data-del-colab]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      snapshotForUndo();
+      state.colaboradores = state.colaboradores.filter(c=>c.id!==btn.dataset.delColab);
+      ensureHorarioShape(); saveState(); render();
+    });
+  });
+  document.querySelectorAll(".colab-nombre").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      const c = state.colaboradores.find(x=>x.id===e.target.dataset.id);
+      if(c){ c.nombre = e.target.value; saveState(); render(); }
+    });
+  });
+  document.querySelectorAll(".colab-puesto").forEach(sel=>{
+    sel.addEventListener("change", e=>{
+      const c = state.colaboradores.find(x=>x.id===e.target.dataset.id);
+      if(c){ c.puesto = e.target.value; saveState(); render(); }
+    });
+  });
+  document.querySelectorAll(".colab-horas").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      const c = state.colaboradores.find(x=>x.id===e.target.dataset.id);
+      if(c){ c.maxHoras = Number(e.target.value)||state.maxHorasSemana; saveState(); }
+    });
+  });
+
+  // Turnos / plantillas
+  const addTurno = document.getElementById("addTurno");
+  if(addTurno){
+    addTurno.addEventListener("click", ()=>{
+      state.turnos.push({id:uid(), nombre:"Nueva plantilla", inicio:"09:00", fin:"17:00", minPersonal:2});
+      saveState(); render();
+    });
+  }
+  document.querySelectorAll("[data-del-turno]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      snapshotForUndo();
+      state.turnos = state.turnos.filter(t=>t.id!==btn.dataset.delTurno);
+      saveState(); render();
+    });
+  });
+  document.querySelectorAll(".turno-nombre").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      const t = state.turnos.find(x=>x.id===e.target.dataset.id);
+      if(t){ t.nombre = e.target.value; saveState(); render(); }
+    });
+  });
+  document.querySelectorAll(".turno-inicio").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      const t = state.turnos.find(x=>x.id===e.target.dataset.id);
+      if(t){ t.inicio = e.target.value; saveState(); render(); }
+    });
+  });
+  document.querySelectorAll(".turno-fin").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      const t = state.turnos.find(x=>x.id===e.target.dataset.id);
+      if(t){ t.fin = e.target.value; saveState(); render(); }
+    });
+  });
+  document.querySelectorAll(".turno-min").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      const t = state.turnos.find(x=>x.id===e.target.dataset.id);
+      if(t){ t.minPersonal = Math.max(1, Number(e.target.value)||1); saveState(); render(); }
+    });
+  });
+  const maxHorasDefault = document.getElementById("maxHorasDefault");
+  if(maxHorasDefault){
+    maxHorasDefault.addEventListener("change", e=>{ state.maxHorasSemana = Number(e.target.value)||48; saveState(); });
+  }
+  const op24h = document.getElementById("op24h");
+  if(op24h){
+    op24h.addEventListener("change", e=>{ state.operacion.is24h = e.target.checked; saveState(); render(); });
+  }
+  const opApertura = document.getElementById("opApertura");
+  if(opApertura) opApertura.addEventListener("change", e=>{ state.operacion.apertura = e.target.value; saveState(); });
+  const opCierre = document.getElementById("opCierre");
+  if(opCierre) opCierre.addEventListener("change", e=>{ state.operacion.cierre = e.target.value; saveState(); });
+
+  // Horario
+  const autoBtn = document.getElementById("autoOrganizar");
+  if(autoBtn) autoBtn.addEventListener("click", ()=>{ snapshotForUndo(); autoOrganizar(); });
+  const imprimirBtn = document.getElementById("imprimirHorario");
+  if(imprimirBtn) imprimirBtn.addEventListener("click", ()=>{ window.print(); });
+  const semanaLabelInput = document.getElementById("semanaLabelInput");
+  if(semanaLabelInput) semanaLabelInput.addEventListener("change", e=>{ state.semanaLabel = e.target.value; saveState(); });
+  const filtroColabInput = document.getElementById("filtroColabInput");
+  if(filtroColabInput) filtroColabInput.addEventListener("input", e=>{ state.filtroColab = e.target.value; render(); });
+  const deshacerBtn = document.getElementById("deshacerBtn");
+  if(deshacerBtn) deshacerBtn.addEventListener("click", deshacer);
+  const exportarCsvBtn = document.getElementById("exportarCsv");
+  if(exportarCsvBtn) exportarCsvBtn.addEventListener("click", exportarHorarioCSV);
+  const clearBtn = document.getElementById("clearHorario");
+  if(clearBtn) clearBtn.addEventListener("click", ()=>{
+    if(!window.confirm("¿Vaciar todo el horario semanal? Esta acción se puede deshacer con el botón Deshacer.")) return;
+    snapshotForUndo();
+    for(let d=0; d<7; d++) state.horario[d] = {};
+    saveState(); render();
+  });
+  document.querySelectorAll("[data-day-copy]").forEach(sel=>{
+    sel.addEventListener("change", e=>{
+      const origen = Number(e.target.dataset.dayCopy);
+      const destino = e.target.value;
+      if(destino===""){ return; }
+      const destinoNum = Number(destino);
+      if(!window.confirm(`¿Copiar el horario de ${DIAS[origen]} sobre ${DIAS[destinoNum]} para todos los colaboradores? Se sobrescribirá lo que haya en ${DIAS[destinoNum]}.`)){
+        e.target.value = ""; return;
+      }
+      snapshotForUndo();
+      ensureHorarioShape();
+      state.horario[destinoNum] = JSON.parse(JSON.stringify(state.horario[origen]));
+      saveState(); render();
+    });
+  });
+
+  function getEntry(d,cid){
+    if(!state.horario[d]) state.horario[d] = {};
+    return state.horario[d][cid];
+  }
+  document.querySelectorAll("[data-set-trabaja]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      snapshotForUndo();
+      const [d,cid] = btn.dataset.setTrabaja.split("|");
+      state.horario[Number(d)][cid] = { estado:"trabaja", inicio:"09:00", fin:"17:00" };
+      saveState(); render();
+    });
+  });
+  document.querySelectorAll("[data-set-descanso]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      snapshotForUndo();
+      const [d,cid] = btn.dataset.setDescanso.split("|");
+      state.horario[Number(d)][cid] = { estado:"descanso" };
+      saveState(); render();
+    });
+  });
+  document.querySelectorAll("[data-quick]").forEach(sel=>{
+    sel.addEventListener("change", e=>{
+      if(!e.target.value) return;
+      snapshotForUndo();
+      const [d,cid] = e.target.dataset.quick.split("|");
+      const t = state.turnos.find(x=>x.id===e.target.value);
+      if(t){ state.horario[Number(d)][cid] = { estado:"trabaja", inicio:t.inicio, fin:t.fin }; saveState(); render(); }
+    });
+  });
+  document.querySelectorAll(".cell-inicio").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      const [d,cid] = e.target.dataset.key.split("|");
+      const entry = getEntry(Number(d),cid);
+      if(entry){ snapshotForUndo(); entry.inicio = e.target.value; saveState(); render(); }
+    });
+  });
+  document.querySelectorAll(".cell-fin").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      const [d,cid] = e.target.dataset.key.split("|");
+      const entry = getEntry(Number(d),cid);
+      if(entry){ snapshotForUndo(); entry.fin = e.target.value; saveState(); render(); }
+    });
+  });
+}
+
+loadState();
+</script>
+</body>
+</html>
