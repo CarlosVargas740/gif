@@ -3,231 +3,459 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Horarios OXXO</title>
+<title>Horarios OXXO · Panel de operaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Inter:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root{
-    --rojo:#D8232A;
-    --rojo-oscuro:#8F1218;
-    --rojo-tinta:#5C0E12;
-    --crema:#FBF6EE;
-    --panel:#FFFFFF;
-    --tinta:#241B18;
-    --gris:#8A7C74;
-    --linea:#EAE0D2;
-    --amarillo:#FFC72C;
-    --azul-noche:#1F3A5F;
-    --naranja-mixto:#D9772E;
-    --verde:#2F7D5C;
-    --ambar:#B9770E;
-    --sombra: 0 2px 10px rgba(92,14,18,.08);
+    --ink:#14161F;
+    --ink-2:#2A2D3A;
+    --paper:#F5F3EE;
+    --surface:#FFFFFF;
+    --surface-2:#FBFAF7;
+    --sidebar:#181A24;
+    --sidebar-2:#22242F;
+    --line:#E6E0D3;
+    --line-strong:#D7CDB8;
+    --muted:#8B8272;
+    --muted-2:#6C6455;
+    --red:#D2202C;
+    --red-deep:#8F131C;
+    --red-wash:#FBEAE8;
+    --amber:#DE9A2E;
+    --amber-wash:#FBF0DA;
+    --green:#1E8A57;
+    --green-wash:#E4F3EA;
+    --blue:#2E5A9E;
+    --blue-wash:#E8EFF9;
+    --orange:#C05A1D;
+    --orange-wash:#FBEADB;
+    --radius:12px;
+    --radius-sm:8px;
+    --radius-lg:16px;
+    --shadow-sm:0 1px 2px rgba(20,18,12,.06);
+    --shadow-md:0 14px 34px -16px rgba(20,18,12,.28), 0 2px 8px rgba(20,18,12,.06);
+    --font-display:'Sora', ui-sans-serif, system-ui, sans-serif;
+    --font-body:'Inter', ui-sans-serif, system-ui, sans-serif;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--crema);
-    color:var(--tinta);
-    font-family: ui-sans-serif, "Segoe UI", Helvetica, Arial, sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
     -webkit-font-smoothing:antialiased;
+    font-size:14px;
   }
-  .app{max-width:1220px;margin:0 auto;padding:0 0 60px;}
-
-  .marquee{
-    background: linear-gradient(180deg, var(--rojo) 0%, var(--rojo-oscuro) 100%);
-    padding:22px 24px 18px;
-    border-bottom:6px solid var(--amarillo);
-    position:relative;
-    overflow:hidden;
-  }
-  .marquee::after{
-    content:"";
-    position:absolute; right:-40px; top:-60px;
-    width:220px;height:220px;border-radius:50%;
-    background:rgba(255,255,255,.06);
-  }
-  .marquee-top{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
-  .brandmark{display:flex; align-items:center; gap:10px;}
-  .brandtile{
-    width:40px;height:40px;border-radius:9px;background:var(--amarillo);
-    display:flex;align-items:center;justify-content:center;
-    font-weight:900; color:var(--rojo-tinta); font-size:18px; letter-spacing:-1px;
-    box-shadow: inset 0 -3px 0 rgba(0,0,0,.15);
-  }
-  h1{color:#fff; margin:0; font-size:26px; letter-spacing:-.5px; font-weight:900;}
-  .subt{color:rgba(255,255,255,.85); margin:2px 0 0; font-size:13px;}
-  .store-input{
-    background:rgba(255,255,255,.14);
-    border:1px solid rgba(255,255,255,.35);
-    border-radius:8px; color:#fff; padding:9px 12px; font-size:14px; font-weight:600;
-    min-width:220px;
-  }
-  .store-input::placeholder{color:rgba(255,255,255,.7);}
-
-  .tabs{display:flex; gap:4px; padding:14px 24px 0; flex-wrap:wrap;}
-  .tab{
-    background:transparent; border:none; cursor:pointer;
-    color:rgba(255,255,255,.75); font-weight:800; font-size:13.5px;
-    padding:10px 16px; border-radius:8px 8px 0 0; letter-spacing:.2px;
-  }
-  .tab.active{ background:var(--crema); color:var(--rojo-tinta);}
-  .tab:not(.active):hover{ background:rgba(255,255,255,.12); color:#fff;}
-
-  main{padding:22px 24px;}
-  .panel{
-    background:var(--panel); border-radius:14px; box-shadow:var(--sombra);
-    padding:20px 22px; margin-bottom:18px; border:1px solid var(--linea);
-  }
-  .panel h2{margin:0 0 4px; font-size:18px; letter-spacing:-.3px;}
-  .panel .hint{color:var(--gris); font-size:13px; margin:0 0 16px;}
-
+  h1,h2,h3{font-family:var(--font-display); margin:0; letter-spacing:-.01em;}
   button{font-family:inherit;}
+  .num{font-family:var(--font-display); font-variant-numeric:tabular-nums;}
+
+  /* ---------- Layout shell ---------- */
+  .shell{display:flex; min-height:100vh;}
+  .sidebar{
+    width:236px; flex:0 0 236px; background:var(--sidebar); color:#fff;
+    position:fixed; top:0; left:0; bottom:0; display:flex; flex-direction:column;
+    padding:20px 14px; z-index:40;
+  }
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 22px;}
+  .brand-mark{
+    width:36px; height:36px; border-radius:10px; background:var(--red);
+    display:flex; align-items:center; justify-content:center; flex:0 0 36px;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.18);
+  }
+  .brand-mark svg{width:20px; height:20px;}
+  .brand-text .name{font-family:var(--font-display); font-weight:700; font-size:15px; line-height:1.2;}
+  .brand-text .tag{font-size:11px; color:rgba(255,255,255,.5); margin-top:1px;}
+
+  .nav{display:flex; flex-direction:column; gap:2px; flex:1;}
+  .nav-item{
+    display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:9px;
+    color:rgba(255,255,255,.62); font-weight:600; font-size:13.5px; cursor:pointer; border:none; background:transparent;
+    text-align:left; width:100%;
+  }
+  .nav-item svg{width:18px; height:18px; flex:0 0 18px; opacity:.85;}
+  .nav-item:hover{background:rgba(255,255,255,.06); color:#fff;}
+  .nav-item.active{background:var(--red); color:#fff;}
+  .nav-item.active svg{opacity:1;}
+  .nav-badge{
+    margin-left:auto; background:rgba(255,255,255,.14); color:#fff; font-size:10.5px; font-weight:700;
+    padding:1px 7px; border-radius:20px; min-width:18px; text-align:center;
+  }
+  .nav-item.active .nav-badge{background:rgba(255,255,255,.28);}
+
+  .sidebar-foot{border-top:1px solid rgba(255,255,255,.1); padding-top:12px; margin-top:8px;}
+  .law-chip{
+    display:flex; gap:8px; align-items:flex-start; font-size:11px; color:rgba(255,255,255,.48); line-height:1.5; padding:2px 8px;
+  }
+  .law-chip svg{width:14px; height:14px; flex:0 0 14px; margin-top:1px; opacity:.7;}
+
+  .main-wrap{flex:1; margin-left:236px; display:flex; flex-direction:column; min-width:0;}
+  .topbar{
+    position:sticky; top:0; z-index:30; background:rgba(245,243,238,.92); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line); padding:14px 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .topbar-left{display:flex; flex-direction:column; gap:1px;}
+  .topbar-title{font-size:18px; font-weight:700;}
+  .topbar-sub{font-size:12px; color:var(--muted);}
+  .topbar-right{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+
+  .store-input{
+    background:var(--surface); border:1.5px solid var(--line); border-radius:9px; color:var(--ink); padding:8px 12px;
+    font-size:13px; font-weight:600; min-width:190px; font-family:inherit;
+  }
+  .store-input:focus{outline:none; border-color:var(--red);}
+
+  .icon-btn{
+    position:relative; width:36px; height:36px; border-radius:9px; border:1.5px solid var(--line); background:var(--surface);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-2);
+  }
+  .icon-btn:hover{border-color:var(--line-strong);}
+  .icon-btn svg{width:17px; height:17px;}
+  .icon-btn .ping{
+    position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff; font-size:10px; font-weight:800;
+    min-width:16px; height:16px; border-radius:20px; display:flex; align-items:center; justify-content:center; padding:0 3px;
+    border:2px solid var(--paper);
+  }
+
+  main{padding:24px 28px 60px;}
+
+  /* ---------- Buttons ---------- */
   .btn{
-    border:none; border-radius:8px; padding:9px 16px; font-weight:800; font-size:13.5px;
-    cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+    border:none; border-radius:9px; padding:9px 15px; font-weight:700; font-size:13px;
+    cursor:pointer; display:inline-flex; align-items:center; gap:7px; font-family:inherit; white-space:nowrap;
   }
-  .btn-primary{background:var(--rojo); color:#fff;}
-  .btn-primary:hover{background:var(--rojo-oscuro);}
-  .btn-ghost{background:transparent; color:var(--rojo-tinta); border:1.5px solid var(--linea);}
-  .btn-ghost:hover{border-color:var(--rojo);}
-  .btn-danger{background:transparent; color:#B23A3A;}
-  .btn-danger:hover{text-decoration:underline;}
-  .btn-sm{padding:5px 9px; font-size:12px; border-radius:6px;}
-  .btn-xs{padding:3px 7px; font-size:11px; border-radius:6px;}
-  .btn-amarillo{background:var(--amarillo); color:var(--rojo-tinta);}
-  .btn-amarillo:hover{filter:brightness(.95);}
-  .btn-outline-rest{background:#fff; color:var(--gris); border:1.5px solid var(--linea);}
-  .btn-outline-rest.active{background:#EFE7DA; color:var(--tinta); border-color:#D8C9AF;}
+  .btn svg{width:15px; height:15px;}
+  .btn-primary{background:var(--red); color:#fff;}
+  .btn-primary:hover{background:var(--red-deep);}
+  .btn-dark{background:var(--ink); color:#fff;}
+  .btn-dark:hover{background:var(--ink-2);}
+  .btn-ghost{background:var(--surface); color:var(--ink-2); border:1.5px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--line-strong); background:var(--surface-2);}
+  .btn-danger{background:transparent; color:#A33333; padding:6px 8px;}
+  .btn-danger:hover{background:var(--red-wash);}
+  .btn-sm{padding:6px 11px; font-size:12px; border-radius:7px;}
+  .btn-xs{padding:5px 9px; font-size:11.5px; border-radius:7px;}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+  .btn-block{width:100%; justify-content:center;}
+  .btn-outline-rest{background:var(--surface); color:var(--muted-2); border:1.5px solid var(--line);}
+  .btn-outline-rest.active{background:#EDE6D6; color:var(--ink); border-color:var(--line-strong);}
 
-  label{font-size:11.5px; font-weight:800; color:var(--gris); text-transform:uppercase; letter-spacing:.4px; display:block; margin-bottom:4px;}
+  /* ---------- Panels / cards ---------- */
+  .panel{
+    background:var(--surface); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm);
+    padding:22px 24px; margin-bottom:18px; border:1px solid var(--line);
+  }
+  .panel-head{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:14px;}
+  .panel h2{font-size:16.5px; margin-bottom:3px;}
+  .panel .hint{color:var(--muted); font-size:12.8px; margin:0; line-height:1.55; max-width:62ch;}
+
+  label{font-size:12.3px; font-weight:600; color:var(--muted-2); display:block; margin-bottom:5px;}
   input[type=text], input[type=time], input[type=number], select{
-    width:100%; padding:9px 10px; border:1.5px solid var(--linea); border-radius:8px;
-    font-size:13.5px; color:var(--tinta); background:#fff;
+    width:100%; padding:9px 11px; border:1.5px solid var(--line); border-radius:8px;
+    font-size:13.3px; color:var(--ink); background:var(--surface); font-family:inherit;
   }
-  input:focus, select:focus{outline:2px solid var(--rojo); outline-offset:1px; border-color:var(--rojo);}
+  input:focus, select:focus{outline:none; border-color:var(--red); box-shadow:0 0 0 3px var(--red-wash);}
+  ::placeholder{color:#B4AC9C;}
 
-  table{width:100%; border-collapse:collapse; font-size:13.5px;}
-  th{text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--gris); padding:8px 8px; border-bottom:2px solid var(--linea);}
-  td{padding:9px 8px; border-bottom:1px solid var(--linea); vertical-align:middle;}
+  table{width:100%; border-collapse:collapse; font-size:13.3px;}
+  th{text-align:left; font-size:11.3px; font-weight:700; color:var(--muted-2); padding:9px 10px; border-bottom:1.5px solid var(--line);}
+  td{padding:10px 10px; border-bottom:1px solid var(--line); vertical-align:middle;}
   tr:last-child td{border-bottom:none;}
-  .tag{display:inline-block; padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:800;}
-  .tag-lider{background:#F3E1E2; color:var(--rojo-tinta);}
-  .tag-encargado{background:#FFEFC7; color:#7A5300;}
-  .tag-cajero{background:#E4EFEA; color:var(--verde);}
+  .tag{display:inline-block; padding:3px 10px; border-radius:20px; font-size:11.3px; font-weight:700;}
+  .tag-lider{background:var(--red-wash); color:var(--red-deep);}
+  .tag-encargado{background:var(--amber-wash); color:#7A5300;}
+  .tag-cajero{background:var(--green-wash); color:var(--green);}
 
-  .turno-card{
-    border:1.5px solid var(--linea); border-radius:12px; padding:14px 16px; margin-bottom:12px;
-    display:grid; grid-template-columns: 1.2fr .8fr .8fr .8fr 1fr auto; gap:12px; align-items:center;
+  /* ---------- Notification bell ---------- */
+  .notif-wrap{position:relative;}
+  .notif-panel{
+    position:absolute; top:44px; right:0; width:340px; max-height:420px; overflow-y:auto;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow-md);
+    z-index:50; padding:6px;
   }
+  .notif-panel-head{display:flex; justify-content:space-between; align-items:center; padding:10px 10px 8px; border-bottom:1px solid var(--line); margin-bottom:4px;}
+  .notif-panel-head h3{font-size:13.5px;}
+  .notif-item{display:flex; gap:10px; align-items:flex-start; padding:9px 10px; border-radius:8px; font-size:12.6px; line-height:1.45;}
+  .notif-item:hover{background:var(--surface-2);}
+  .notif-icon{width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex:0 0 26px;}
+  .notif-icon svg{width:14px; height:14px;}
+  .notif-icon.error{background:var(--red-wash); color:var(--red-deep);}
+  .notif-icon.warning{background:var(--amber-wash); color:#8A5A00;}
+  .notif-icon.info{background:var(--blue-wash); color:var(--blue);}
+  .notif-icon.ok{background:var(--green-wash); color:var(--green);}
+  .notif-empty{padding:24px 12px; text-align:center; color:var(--muted); font-size:12.6px;}
+  .notif-foot{padding:8px 10px 4px; text-align:center;}
+  .notif-foot button{background:none; border:none; color:var(--red); font-weight:700; font-size:12px; cursor:pointer; font-family:inherit;}
+
+  /* ---------- KPI grid ---------- */
+  .kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px;}
+  .kpi-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:18px 20px;
+    box-shadow:var(--shadow-sm);
+  }
+  .kpi-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;}
+  .kpi-label{font-size:12.3px; font-weight:600; color:var(--muted-2);}
+  .kpi-icon{width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center;}
+  .kpi-icon svg{width:16px; height:16px;}
+  .kpi-icon.red{background:var(--red-wash); color:var(--red-deep);}
+  .kpi-icon.amber{background:var(--amber-wash); color:#8A5A00;}
+  .kpi-icon.green{background:var(--green-wash); color:var(--green);}
+  .kpi-icon.blue{background:var(--blue-wash); color:var(--blue);}
+  .kpi-value{font-size:26px; font-weight:700; line-height:1;}
+  .kpi-foot{font-size:12px; color:var(--muted); margin-top:7px; line-height:1.4;}
+  .kpi-foot.bad{color:#A33333; font-weight:600;}
+  .kpi-foot.good{color:var(--green); font-weight:600;}
+
+  .chart-row{display:grid; grid-template-columns:1.4fr 1fr; gap:16px; margin-bottom:18px;}
+  .chart-legend{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
+  .chart-legend-item{display:flex; align-items:center; gap:8px; font-size:12.6px;}
+  .chart-legend-item .sw{width:10px; height:10px; border-radius:3px; flex:0 0 10px;}
+  .chart-legend-item .lbl{flex:1; color:var(--ink-2); font-weight:600;}
+  .chart-legend-item .val{color:var(--muted); font-variant-numeric:tabular-nums;}
+  .bars-svg text{font-family:var(--font-body); fill:var(--muted);}
+  .empty-chart{color:var(--muted); font-size:12.8px; text-align:center; padding:30px 10px;}
+
+  .alert-feed{display:flex; flex-direction:column; gap:8px;}
+  .alert-row{display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:10px; font-size:13px; border:1px solid var(--line);}
+  .alert-row .notif-icon{margin-top:1px;}
+
+  /* ---------- Badge tipo turno ---------- */
   .badge-tipo{
-    display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:20px; font-weight:800; font-size:12px; width:fit-content;
+    display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:20px; font-weight:700; font-size:12px; width:fit-content;
   }
-  .badge-diurno{background:#FFF3D6; color:#8A5A00;}
-  .badge-nocturno{background:#E4EAF3; color:var(--azul-noche);}
-  .badge-mixto{background:#FBE7D6; color:var(--naranja-mixto);}
+  .badge-diurno{background:var(--amber-wash); color:#8A5A00;}
+  .badge-nocturno{background:var(--blue-wash); color:var(--blue);}
+  .badge-mixto{background:var(--orange-wash); color:var(--orange);}
   .dot{width:8px;height:8px;border-radius:50%;}
-  .dot-diurno{background:var(--amarillo);}
-  .dot-nocturno{background:var(--azul-noche);}
-  .dot-mixto{background:var(--naranja-mixto);}
-  .legal-ok{color:var(--verde); font-size:12px; font-weight:700;}
-  .legal-bad{color:#B23A3A; font-size:12px; font-weight:700;}
+  .dot-diurno{background:var(--amber);}
+  .dot-nocturno{background:var(--blue);}
+  .dot-mixto{background:var(--orange);}
+  .legal-ok{color:var(--green); font-size:12px; font-weight:700;}
+  .legal-bad{color:#A33333; font-size:12px; font-weight:700;}
 
   .law-box{
-    background:#FBF3E7; border:1px solid #F1DFC0; border-radius:10px; padding:14px 16px; font-size:12.8px; color:#5C4A2A; margin-top:6px;
+    background:var(--amber-wash); border:1px solid #F0DEB0; border-radius:10px; padding:15px 17px; font-size:12.6px; color:#5C4A2A; margin-top:6px; line-height:1.6;
   }
   .law-box b{color:#7A5300;}
 
+  .turno-card{
+    border:1.5px solid var(--line); border-radius:var(--radius); padding:15px 17px; margin-bottom:12px;
+    display:grid; grid-template-columns: 1.2fr .8fr .8fr .8fr 1.1fr auto; gap:14px; align-items:center;
+  }
+
   .op-row{display:flex; gap:16px; align-items:end; flex-wrap:wrap; margin-top:6px;}
   .op-field{min-width:140px;}
-  .op-check{display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--tinta); margin-bottom:9px;}
+  .op-check{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:9px;}
 
-  .toolbar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;}
-  .grid-wrap{overflow-x:auto;}
+  .toolbar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;}
+  .toolbar-actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .search-field{position:relative; min-width:190px;}
+  .search-field input{padding-left:32px;}
+  .search-field svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); width:14px; height:14px; color:var(--muted); pointer-events:none;}
+
+  .publish-chip{display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px;}
+  .publish-chip svg{width:13px; height:13px;}
+  .publish-chip.ok{background:var(--green-wash); color:var(--green);}
+  .publish-chip.warn{background:var(--amber-wash); color:#8A5A00;}
+  .publish-chip.none{background:var(--surface-2); color:var(--muted); border:1px solid var(--line);}
+
+  .grid-wrap{overflow-x:auto; border-radius:var(--radius);}
   .sched-grid{width:100%; border-collapse:separate; border-spacing:8px;}
-  .sched-grid th{background:transparent; padding:0 0 4px 4px; border:none;}
-  .day-head{font-size:13px; font-weight:900; color:var(--rojo-tinta);}
-  .colab-label{font-size:12.5px; font-weight:800; color:var(--tinta); padding:8px 8px; white-space:nowrap; min-width:120px;}
-  .colab-label .small{display:block; font-weight:600; color:var(--gris); font-size:11px; margin-top:2px;}
+  .sched-grid thead th{position:sticky; top:0; z-index:3; background:var(--paper); padding:0 0 4px 4px; border:none; text-align:left;}
+  .day-head{font-size:13px; font-weight:700; color:var(--red-deep); font-family:var(--font-display);}
+  .colab-label{font-size:12.6px; font-weight:700; color:var(--ink); padding:9px 9px; white-space:nowrap; min-width:126px; border-radius:10px;}
+  .colab-label .small{display:block; font-weight:600; color:var(--muted); font-size:11px; margin-top:2px;}
+  .sched-grid td.colab-label, .sched-grid th:first-child{
+    position:sticky; left:0; z-index:2; background:var(--paper);
+  }
+  .sched-grid thead th:first-child{ z-index:4; }
 
   .cell{
-    background:var(--crema); border:1.5px solid var(--linea); border-radius:10px; padding:8px; min-width:150px; vertical-align:top;
+    background:var(--surface-2); border:1.5px solid var(--line); border-radius:10px; padding:9px; min-width:154px; vertical-align:top;
   }
   .cell.libre{border-style:dashed;}
-  .cell.descanso{background:#EFE7DA; border-color:#DED0B6;}
-  .cell.ilegal{background:#FBEAE9; border-color:#E7B2AE;}
-  .cell.legal{background:#EAF5EF; border-color:#CBE6D6;}
-  .time-row{display:flex; gap:4px; margin-bottom:6px;}
+  .cell.descanso{background:#EDE6D6; border-color:#DED0B3;}
+  .cell.ilegal{background:var(--red-wash); border-color:#E7B2AE;}
+  .cell.legal{background:var(--green-wash); border-color:#CBE6D6;}
+  .time-row{display:flex; gap:4px; margin-bottom:7px;}
   .time-row input{padding:5px 6px; font-size:12px;}
   .cell-actions{display:flex; gap:5px; flex-wrap:wrap; margin-bottom:6px;}
   .quick-select{font-size:11px; padding:4px 5px; border-radius:6px;}
-  .cell-badge{font-size:11px; font-weight:800;}
-  .cell-badge.ok{color:var(--verde);}
-  .cell-badge.bad{color:#B23A3A;}
-  .descanso-label{font-size:12px; font-weight:800; color:var(--gris); text-align:center; padding:10px 0;}
+  .cell-badge{font-size:11px; font-weight:700; display:flex; align-items:center; gap:4px;}
+  .cell-badge svg{width:11px; height:11px;}
+  .cell-badge.ok{color:var(--green);}
+  .cell-badge.bad{color:#A33333;}
+  .descanso-label{font-size:12px; font-weight:700; color:var(--muted-2); text-align:center; padding:10px 0; display:flex; align-items:center; justify-content:center; gap:6px;}
+  .descanso-label svg{width:13px; height:13px;}
 
-  .issue{display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:10px; margin-bottom:8px; font-size:13.5px;}
-  .issue-error{background:#FBEAE9; color:#8A2A28;}
-  .issue-warning{background:#FFF4DE; color:#7A5300;}
-  .issue-info{background:#E8F0FB; color:#274470;}
-  .issue-ok{background:#E7F4EC; color:#1F6B49;}
-  .issue-icon{font-weight:900;}
-  .issue-more{color:var(--gris); font-size:12.5px; padding:4px 12px;}
+  .day-col-head{display:flex; flex-direction:column; gap:4px; min-width:154px;}
+  .day-head-row{display:flex; align-items:center; justify-content:space-between; gap:6px;}
+  .day-copy-select{font-size:10.3px; padding:2px 3px; border-radius:6px; border:1.5px solid var(--line); color:var(--muted); max-width:96px;}
 
-  .summary-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px;}
-  .colab-card{border:1.5px solid var(--linea); border-radius:12px; padding:12px 14px;}
-  .colab-card .nombre{font-weight:800; font-size:14px; margin-bottom:2px;}
-  .barwrap{background:#EFE7DA; border-radius:6px; height:8px; margin-top:8px; overflow:hidden;}
-  .bar{height:100%; border-radius:6px; background:var(--rojo);}
-  .bar.over{background:#B23A3A;}
-  .small{font-size:12px; color:var(--gris);}
+  .total-col{min-width:120px;}
+  .total-cell{background:var(--surface); border:1.5px solid var(--line); border-radius:10px; padding:10px 10px; text-align:center;}
+  .total-cell .horas-num{font-weight:700; font-size:15px; color:var(--ink); font-family:var(--font-display);}
+  .total-cell .horas-max{font-size:11px; color:var(--muted); margin-top:1px;}
+  .total-cell .barwrap{margin-top:7px;}
+  .total-cell.over .horas-num{color:#A33333;}
 
-  .empty{color:var(--gris); font-size:13px; padding:14px 4px;}
-  ::placeholder{color:#B7ACA1;}
-  .footer-note{text-align:center; color:var(--gris); font-size:12px; margin-top:6px;}
+  .barwrap{background:#EDE6D6; border-radius:6px; height:7px; margin-top:8px; overflow:hidden;}
+  .bar{height:100%; border-radius:6px; background:var(--red);}
+  .bar.over{background:#A33333;}
+  .small{font-size:12px; color:var(--muted);}
 
-  /* ---------- Mejoras: indicador de guardado, toolbar avanzada, tabla fija ---------- */
+  .issue{display:flex; gap:10px; align-items:flex-start; padding:11px 13px; border-radius:10px; margin-bottom:8px; font-size:13.3px; line-height:1.5;}
+  .issue-error{background:var(--red-wash); color:#8A2A28;}
+  .issue-warning{background:var(--amber-wash); color:#7A5300;}
+  .issue-info{background:var(--blue-wash); color:#274470;}
+  .issue-ok{background:var(--green-wash); color:#1F6B49;}
+  .issue-icon{flex:0 0 auto; margin-top:1px;}
+  .issue-icon svg{width:16px; height:16px;}
+  .issue-more{color:var(--muted); font-size:12.5px; padding:4px 12px;}
+
+  .summary-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px;}
+  .colab-card{border:1.5px solid var(--line); border-radius:var(--radius); padding:14px 16px; background:var(--surface);}
+  .colab-card .nombre{font-weight:700; font-size:14px; margin-bottom:2px;}
+
+  .empty{color:var(--muted); font-size:13px; padding:14px 4px;}
+  .empty-search{color:var(--muted); font-size:13px; padding:20px 4px; text-align:center;}
+  .footer-note{text-align:center; color:var(--muted); font-size:11.8px; margin:8px 0 0; line-height:1.6;}
+
   .save-indicator{
-    display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--verde);
+    display:inline-flex; align-items:center; gap:6px; font-size:11.8px; font-weight:700; color:var(--green);
     opacity:0; transition:opacity .35s ease; white-space:nowrap;
   }
   .save-indicator.show{opacity:1;}
-  .save-indicator .dot-save{width:6px; height:6px; border-radius:50%; background:var(--verde);}
+  .save-indicator .dot-save{width:6px; height:6px; border-radius:50%; background:var(--green);}
 
   .sync-badge{
-    font-size:11.5px; font-weight:700; color:rgba(255,255,255,.65); white-space:nowrap;
-    padding:5px 10px; border-radius:20px; background:rgba(255,255,255,.1);
+    font-size:11.3px; font-weight:700; color:var(--muted-2); white-space:nowrap;
+    padding:6px 12px; border-radius:20px; background:var(--surface); border:1.5px solid var(--line);
+    display:inline-flex; align-items:center; gap:6px;
   }
-  .sync-badge.show{background:rgba(255,255,255,.18); color:#fff;}
-  .sync-badge.error{background:rgba(0,0,0,.18); color:#FFD9CE;}
+  .sync-badge svg{width:13px; height:13px;}
+  .sync-badge.show{color:var(--ink-2);}
+  .sync-badge.error{background:var(--red-wash); color:#8A2A28; border-color:#E7B2AE;}
 
-  .toolbar-actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
-  .search-field{position:relative; min-width:200px;}
-  .search-field input{padding-left:30px;}
-  .search-field::before{
-    content:"🔎"; position:absolute; left:9px; top:50%; transform:translateY(-50%); font-size:12px; opacity:.6;
+  /* ---------- Empty states ---------- */
+  .zero-state{text-align:center; padding:36px 20px; color:var(--muted);}
+  .zero-state svg{width:38px; height:38px; margin-bottom:10px; opacity:.5;}
+  .zero-state .t{font-weight:700; color:var(--ink-2); font-size:14px; margin-bottom:4px;}
+  .zero-state .d{font-size:12.6px; max-width:40ch; margin:0 auto;}
+
+  /* ---------- Tema oscuro ---------- */
+  .shell[data-theme="dark"]{
+    --ink:#ECEDF3; --ink-2:#C7C9D8; --paper:#14151C; --surface:#1B1D27; --surface-2:#20222D;
+    --line:#2B2E3B; --line-strong:#3A3E4E; --muted:#8890A6; --muted-2:#A3AABC;
+    --red-wash:#3A2024; --amber-wash:#332A16; --green-wash:#173226; --blue-wash:#1B2A40; --orange-wash:#332417;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 14px 34px -16px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.3);
   }
+  .shell[data-theme="dark"] .topbar{background:rgba(20,21,28,.88);}
+  .shell[data-theme="dark"] .cell.descanso{background:#262A38; border-color:#383D50;}
+  .shell[data-theme="dark"] .barwrap{background:#2B2E3B;}
+  .shell[data-theme="dark"] .law-box{background:#332A16; color:#E9CE8E; border-color:#4A3D1E;}
+  .shell[data-theme="dark"] .law-box b{color:#F0DEB0;}
+  .shell[data-theme="dark"] .btn-outline-rest.active{background:#2E3242; color:var(--ink); border-color:var(--line-strong);}
+  .shell[data-theme="dark"] .compact-libre{color:#6B7286;}
 
-  .grid-wrap{border-radius:12px;}
-  .sched-grid thead th{position:sticky; top:0; z-index:3; background:var(--crema); padding-bottom:6px;}
-  .sched-grid td.colab-label, .sched-grid th:first-child{
-    position:sticky; left:0; z-index:2; background:var(--crema);
-    box-shadow: 2px 0 6px rgba(92,14,18,.06);
+  .theme-toggle{
+    display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%;
+    padding:9px 12px; border-radius:9px; background:rgba(255,255,255,.06); border:none; color:rgba(255,255,255,.75);
+    font-weight:600; font-size:12.5px; cursor:pointer; font-family:inherit; margin-bottom:10px;
   }
-  .sched-grid thead th:first-child{ z-index:4; }
-  .colab-label{border-radius:10px;}
+  .theme-toggle:hover{background:rgba(255,255,255,.1);}
+  .theme-toggle .lbl{display:flex; align-items:center; gap:8px;}
+  .theme-toggle .lbl svg{width:15px; height:15px;}
+  .theme-toggle .switch{width:32px; height:18px; border-radius:20px; background:rgba(255,255,255,.18); position:relative; flex:0 0 32px; transition:background .2s ease;}
+  .theme-toggle .switch .knob{position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; transition:transform .25s cubic-bezier(.4,1.4,.6,1);}
+  .theme-toggle.on .switch{background:var(--red);}
+  .theme-toggle.on .switch .knob{transform:translateX(14px);}
 
-  .day-col-head{display:flex; flex-direction:column; gap:4px; min-width:150px;}
-  .day-head-row{display:flex; align-items:center; justify-content:space-between; gap:6px;}
-  .day-copy-select{font-size:10.5px; padding:2px 3px; border-radius:6px; border:1.5px solid var(--linea); color:var(--gris); max-width:96px;}
+  /* ---------- Transición suave entre pestañas ---------- */
+  .tab-anim{animation:tabFadeSlide .32s cubic-bezier(.2,.7,.3,1);}
+  @keyframes tabFadeSlide{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
 
-  .total-col{min-width:118px;}
-  .total-cell{
-    background:#fff; border:1.5px solid var(--linea); border-radius:10px; padding:10px 10px; text-align:center;
+  /* ---------- Barras de cobertura: crecimiento animado ---------- */
+  .bars-svg rect{ transition:height .75s cubic-bezier(.16,.9,.3,1), y .75s cubic-bezier(.16,.9,.3,1); }
+
+  /* ---------- Confirmación animada al publicar ---------- */
+  .publish-confirm-overlay{
+    position:fixed; inset:0; background:rgba(20,18,12,.4); display:flex; align-items:center; justify-content:center; z-index:200;
+    animation:overlayIn .18s ease;
   }
-  .total-cell .horas-num{font-weight:900; font-size:15px; color:var(--tinta);}
-  .total-cell .horas-max{font-size:11px; color:var(--gris); margin-top:1px;}
-  .total-cell .barwrap{margin-top:7px;}
-  .total-cell.over .horas-num{color:#B23A3A;}
+  @keyframes overlayIn{ from{opacity:0;} to{opacity:1;} }
+  .publish-confirm-card{
+    background:var(--surface); border-radius:var(--radius-lg); box-shadow:var(--shadow-md); padding:32px 44px;
+    display:flex; flex-direction:column; align-items:center; gap:12px; animation:confirmPop .32s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes confirmPop{ from{opacity:0; transform:scale(.85);} to{opacity:1; transform:scale(1);} }
+  .publish-check-circle{width:64px; height:64px; border-radius:50%; background:var(--green-wash); display:flex; align-items:center; justify-content:center;}
+  .publish-check-circle svg{width:32px; height:32px; overflow:visible;}
+  .publish-check-circle svg path{
+    stroke:var(--green); stroke-dasharray:40; stroke-dashoffset:40; animation:drawCheck .5s .15s cubic-bezier(.3,.6,.4,1) forwards;
+  }
+  @keyframes drawCheck{ to{stroke-dashoffset:0;} }
+  .publish-confirm-text{font-weight:700; font-size:14.5px; color:var(--ink); font-family:var(--font-display);}
+  .publish-confirm-sub{font-size:12.2px; color:var(--muted);}
 
-  .empty-search{color:var(--gris); font-size:13px; padding:20px 4px; text-align:center;}
+  /* ---------- Toasts / snackbars ---------- */
+  .toast-stack{
+    position:fixed; bottom:20px; right:20px; z-index:250; display:flex; flex-direction:column; gap:8px; align-items:flex-end;
+    pointer-events:none;
+  }
+  .toast{
+    display:flex; align-items:center; gap:9px; background:var(--ink); color:#fff; padding:10px 16px; border-radius:10px;
+    font-size:12.6px; font-weight:600; box-shadow:var(--shadow-md); max-width:320px;
+    animation:toastIn .28s cubic-bezier(.2,.8,.3,1) both, toastOut .28s ease 2.4s both;
+  }
+  .toast svg{width:15px; height:15px; flex:0 0 15px;}
+  .toast.ok{background:var(--green);}
+  .toast.warn{background:#8A5A00;}
+  .toast.info{background:var(--blue);}
+  @keyframes toastIn{ from{opacity:0; transform:translateY(10px) scale(.96);} to{opacity:1; transform:translateY(0) scale(1);} }
+  @keyframes toastOut{ to{opacity:0; transform:translateY(-6px) scale(.98);} }
+  @media (max-width:960px){ .toast-stack{bottom:76px; right:12px; left:12px; align-items:stretch;} .toast{max-width:none;} }
+
+  /* ---------- Avatares con iniciales ---------- */
+  .avatar{
+    width:28px; height:28px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:11px; color:#fff; flex:0 0 28px; font-family:var(--font-display);
+  }
+  .colab-label-inner{display:flex; align-items:center; gap:9px;}
+  .colab-label-text{display:flex; flex-direction:column;}
+  .colab-name-wrap{display:flex; align-items:center; gap:9px;}
+
+  /* ---------- Vista compacta del horario ---------- */
+  .view-toggle{display:inline-flex; border:1.5px solid var(--line); border-radius:9px; overflow:hidden;}
+  .view-toggle button{border:none; background:var(--surface); color:var(--muted-2); font-weight:700; font-size:12px; padding:7px 12px; cursor:pointer; font-family:inherit;}
+  .view-toggle button.active{background:var(--ink); color:#fff;}
+
+  .compact-grid{width:100%; border-collapse:collapse; font-size:12.2px;}
+  .compact-grid th{position:sticky; top:0; background:var(--paper); text-align:left; padding:8px 9px; font-size:10.6px; font-weight:700; color:var(--muted-2); border-bottom:1.5px solid var(--line); z-index:3;}
+  .compact-grid td{padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:middle; white-space:nowrap;}
+  .compact-grid td.colab-label{position:sticky; left:0; background:var(--paper); z-index:2; font-weight:700;}
+  .compact-grid th:first-child{position:sticky; left:0; z-index:4;}
+  .compact-cell{display:flex; align-items:center; gap:5px;}
+  .compact-cell input[type=time]{padding:4px 5px; font-size:11px; width:74px;}
+  .compact-cell .sep{color:var(--muted);}
+  .compact-cell .cell-badge{display:inline-flex;}
+  .compact-cell .cell-badge svg{width:13px; height:13px;}
+  .compact-cell .cell-badge.ok{color:var(--green);}
+  .compact-cell .cell-badge.bad{color:#A33333;}
+  .compact-descanso{color:var(--muted-2); font-weight:700; font-size:11.3px; display:flex; align-items:center; gap:4px;}
+  .compact-descanso svg{width:12px; height:12px;}
+  .compact-libre{color:#B4AC9C; font-size:11px;}
+  .compact-total{font-weight:700; font-family:var(--font-display);}
+  .compact-total.over{color:#A33333;}
+
+  /* ---------- Funciones pro ---------- */
+  .pro-badge{background:var(--ink); color:#fff; font-size:9px; font-weight:800; padding:2px 7px; border-radius:20px; letter-spacing:.03em; margin-left:6px; vertical-align:middle;}
+  .history-list{display:flex; flex-direction:column; gap:8px;}
+  .history-item{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 13px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface);}
+  .history-item .meta{font-size:12.6px; font-weight:600; color:var(--ink-2);}
+  .history-item .meta .small{display:block; font-size:11px; color:var(--muted); font-weight:600; margin-top:1px;}
 
   @media print{
     .save-indicator{display:none !important;}
@@ -237,55 +465,116 @@
   .print-only{display:none;}
   @media print{
     body{background:#fff;}
-    .marquee, .tabs, main > .panel, .footer-note{display:none !important;}
+    .shell{display:none !important;}
     .print-only{display:block !important;}
     @page{ size:landscape; margin:10mm; }
     *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
-  .print-page{padding:10px 4px; font-family: ui-sans-serif, "Segoe UI", Helvetica, Arial, sans-serif; color:var(--tinta);}
-  .print-head{display:flex; align-items:center; justify-content:space-between; border-bottom:4px solid var(--rojo); padding-bottom:10px; margin-bottom:14px;}
+  .print-page{padding:10px 4px; font-family: var(--font-body); color:var(--ink);}
+  .print-head{display:flex; align-items:center; justify-content:space-between; border-bottom:4px solid var(--red); padding-bottom:10px; margin-bottom:14px;}
   .print-brand{display:flex; align-items:center; gap:10px;}
-  .print-brandtile{width:36px;height:36px;border-radius:8px;background:var(--rojo); color:var(--amarillo); font-weight:900; font-size:16px; display:flex; align-items:center; justify-content:center;}
-  .print-title{font-size:20px; font-weight:900; letter-spacing:-.3px; margin:0;}
-  .print-sub{font-size:12px; color:var(--gris); margin:1px 0 0;}
-  .print-week{font-size:13px; font-weight:800; color:var(--rojo-tinta); text-align:right;}
-  .print-week .small{display:block; font-weight:600; color:var(--gris); margin-top:2px;}
+  .print-brandtile{width:36px;height:36px;border-radius:9px;background:var(--red); color:#fff; font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; font-family:var(--font-display);}
+  .print-title{font-size:20px; font-weight:700; letter-spacing:-.3px; margin:0; font-family:var(--font-display);}
+  .print-sub{font-size:12px; color:var(--muted); margin:1px 0 0;}
+  .print-week{font-size:13px; font-weight:700; color:var(--red-deep); text-align:right;}
+  .print-week .small{display:block; font-weight:600; color:var(--muted); margin-top:2px;}
 
   .print-table{width:100%; border-collapse:collapse; font-size:11.5px;}
-  .print-table th{background:var(--rojo-tinta); color:#fff; text-align:left; padding:7px 8px; font-size:10.5px; text-transform:uppercase; letter-spacing:.3px;}
-  .print-table td{border:1px solid var(--linea); padding:6px 7px; vertical-align:top;}
-  .print-colab{font-weight:800; font-size:12px;}
-  .print-colab .small{display:block; font-weight:600; color:var(--gris); font-size:10px; margin-top:1px;}
-  .print-slot{border-radius:6px; padding:4px 6px; font-weight:800; font-size:11px; text-align:center;}
-  .print-diurno{background:#FFF3D6; color:#8A5A00; border:1px solid #F0D998;}
-  .print-nocturno{background:#E4EAF3; color:var(--azul-noche); border:1px solid #C7D3E8;}
-  .print-mixto{background:#FBE7D6; color:var(--naranja-mixto); border:1px solid #F0C79E;}
-  .print-descanso{background:#EFE7DA; color:var(--gris); text-align:center; font-weight:700; font-size:11px; padding:5px;}
+  .print-table th{background:var(--ink); color:#fff; text-align:left; padding:7px 8px; font-size:10.5px;}
+  .print-table td{border:1px solid var(--line); padding:6px 7px; vertical-align:top;}
+  .print-colab{font-weight:700; font-size:12px;}
+  .print-colab .small{display:block; font-weight:600; color:var(--muted); font-size:10px; margin-top:1px;}
+  .print-slot{border-radius:6px; padding:4px 6px; font-weight:700; font-size:11px; text-align:center;}
+  .print-diurno{background:var(--amber-wash); color:#8A5A00; border:1px solid #F0D998;}
+  .print-nocturno{background:var(--blue-wash); color:var(--blue); border:1px solid #C7D3E8;}
+  .print-mixto{background:var(--orange-wash); color:var(--orange); border:1px solid #F0C79E;}
+  .print-descanso{background:#EDE6D6; color:var(--muted); text-align:center; font-weight:700; font-size:11px; padding:5px;}
   .print-vacio{color:#C9BEB2; text-align:center; font-size:11px;}
-  .print-total{font-weight:900; text-align:center;}
+  .print-total{font-weight:700; text-align:center;}
 
   .print-legend{display:flex; gap:18px; align-items:center; margin-top:12px; font-size:11px; flex-wrap:wrap;}
   .print-legend .sw{display:inline-flex; align-items:center; gap:5px;}
   .print-legend .box{width:11px;height:11px;border-radius:3px;}
 
   .print-signs{display:flex; justify-content:space-between; margin-top:36px;}
-  .print-sign{width:30%; border-top:1px solid var(--tinta); padding-top:6px; font-size:11px; text-align:center; color:var(--gris);}
-  .print-footer-note{font-size:9.5px; color:var(--gris); margin-top:16px; line-height:1.4;}
+  .print-sign{width:30%; border-top:1px solid var(--ink); padding-top:6px; font-size:11px; text-align:center; color:var(--muted);}
+  .print-footer-note{font-size:9.5px; color:var(--muted); margin-top:16px; line-height:1.5;}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:960px){
+    .sidebar{
+      width:100%; flex:none; position:fixed; top:auto; bottom:0; left:0; right:0; height:64px;
+      flex-direction:row; align-items:center; padding:0 6px; gap:0;
+    }
+    .brand, .sidebar-foot{display:none;}
+    .nav{flex-direction:row; width:100%; justify-content:space-around;}
+    .nav-item{flex-direction:column; gap:3px; padding:7px 4px; font-size:9.5px; border-radius:10px;}
+    .nav-item .nav-badge{position:absolute; top:2px; right:14%; margin-left:0;}
+    .nav-item{position:relative;}
+    .main-wrap{margin-left:0; padding-bottom:64px;}
+    .topbar{padding:12px 16px;}
+    .topbar-title{font-size:16px;}
+    main{padding:16px 16px 40px;}
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .chart-row{grid-template-columns:1fr;}
+    .turno-card{grid-template-columns:1fr 1fr; }
+    .notif-panel{width:290px; right:-40px;}
+  }
+  @media (max-width:560px){
+    .kpi-grid{grid-template-columns:1fr;}
+    .store-input{min-width:0; flex:1;}
+  }
 </style>
 </head>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
 <body>
-<div class="app" id="app"></div>
-
+<div id="app"></div>
 <script>
 /* =========================================================
-   ESTADO
+   CONSTANTES
 ========================================================= */
 const DIAS = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const DIAS_CORTO = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
 const PUESTOS = ["Líder de Tienda","Encargado de Turno","Cajero/Auxiliar"];
-const STORAGE_KEY = "oxxo_horarios_state_v2";
+const STORAGE_KEY = "oxxo_horarios_state_v3";
+
+/* =========================================================
+   ICONOS (SVG en línea, trazo uniforme)
+========================================================= */
+const ICONS = {
+  dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
+  team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.3 2.5-5.8 5.5-5.8s5.5 2.5 5.5 5.8"/><circle cx="17.5" cy="8.5" r="2.6"/><path d="M15.8 14.6c2.5.2 4.7 2.4 4.7 5.4"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12.5" r="8.3"/><path d="M12 7.5v5l3.3 2"/><path d="M9 2.5h6"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.2"/><path d="M3 9.5h18"/><path d="M8 2.5v4M16 2.5v4"/></svg>',
+  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.2c0 4.7-3 8.3-7 9.8-4-1.5-7-5.1-7-9.8V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5a6 6 0 0112 0c0 4.2 1.2 5.6 2 6.5H4c.8-.9 2-2.3 2-6.5z"/><path d="M9.7 19.5a2.4 2.4 0 004.6 0"/></svg>',
+  cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18.5h10.5a3.7 3.7 0 000-7.4 5.6 5.6 0 00-10.9-1.7A4.3 4.3 0 007 18.5z"/></svg>',
+  cloudOff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M9.3 6.4A5.6 5.6 0 0117.5 11.1a3.7 3.7 0 011.3 7"/><path d="M7 18.5a4.3 4.3 0 01-1.6-8.3"/></svg>',
+  sync:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0113.7-5.7L20 8.5"/><path d="M20 4.5v4h-4"/><path d="M20 12a8 8 0 01-13.7 5.7L4 15.5"/><path d="M4 19.5v-4h4"/></svg>',
+  download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v12.2M7.5 11.5l4.5 4.5 4.5-4.5"/><path d="M4.5 18v1.5A1.5 1.5 0 006 21h12a1.5 1.5 0 001.5-1.5V18"/></svg>',
+  printer:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8.5V4h10v4.5"/><rect x="4.5" y="8.5" width="15" height="7.5" rx="1.6"/><path d="M7 14.5h10V20H7z"/></svg>',
+  undo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7.5L4 11l4 3.5"/><path d="M4 11h10a5.5 5.5 0 015.5 5.5v0"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14"/><path d="M9.5 7V5a1.5 1.5 0 011.5-1.5h2A1.5 1.5 0 0114.5 5v2"/><path d="M7 7l1 12.5A1.5 1.5 0 009.5 21h5a1.5 1.5 0 001.5-1.5L17 7"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>',
+  checkCircle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.3 12.3l2.5 2.5 5-5.4"/></svg>',
+  alertTriangle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 4.4a1.6 1.6 0 012.8 0l8 14.2a1.6 1.6 0 01-1.4 2.4H4a1.6 1.6 0 01-1.4-2.4z"/><path d="M12 9.5v4.2"/><path d="M12 17h.01"/></svg>',
+  alertCircle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.3"/><path d="M12 16.2h.01"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.3"/><path d="M12 7.8h.01"/></svg>',
+  zap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3L5 13.5h5.5L11 21l7.5-10.5H13z"/></svg>',
+  eraser:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18.5 13.5L10 5 3.5 11.5a2 2 0 000 2.8L8 18.7h5.2z"/><path d="M9.5 21h10"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.2A8.2 8.2 0 1110.3 4a6.6 6.6 0 0010.2 9.7z"/></svg>',
+  dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5v19"/><path d="M16.5 6.8c0-1.8-2-3-4.5-3s-4.5 1.2-4.5 3c0 4 9 2.4 9 6.4 0 1.8-2 3-4.5 3s-4.5-1.2-4.5-3"/></svg>',
+  trend:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6.5 4 4L21 6"/><path d="M15 6h6v6"/></svg>',
+  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".7" fill="currentColor"/></svg>',
+  gap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h3M16 12h3"/><path d="M9 6l-3 6 3 6M15 6l3 6-3 6" stroke-dasharray="2 2.4"/></svg>',
+  chevron:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  building:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 7.5h1.5M8 11h1.5M8 14.5h1.5M14.5 7.5H16M14.5 11H16M14.5 14.5H16"/><path d="M10 21v-4h4v4"/></svg>',
+  sparkle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.6 5 5 1.6-5 1.6-1.6 5-1.6-5-5-1.6 5-1.6z"/></svg>'
+};
+function ic(name){ return ICONS[name] || ""; }
 
 /* =========================================================
    FIREBASE — sincronización en la nube entre dispositivos
@@ -295,13 +584,6 @@ const STORAGE_KEY = "oxxo_horarios_state_v2";
    3) Copia tu configuración (Configuración del proyecto > tus apps > SDK) y pégala abajo,
       reemplazando el objeto de ejemplo.
    Mientras no cambies "TU_API_KEY", la app funciona solo con guardado local (como antes). */
-// Import the functions you need from the SDKs you need
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyD2ovIbKOjRbEgxexd6lzsqrdz2yp44Qyg",
   authDomain: "horarios-oxxo.firebaseapp.com",
@@ -320,11 +602,11 @@ let pendingRemoteState = null;
 let firebaseSaveTimeout = null;
 let currentSyncStatus = "local";
 const SYNC_STATUS_MAP = {
-  local:        {icon:"📴", text:"Solo en este dispositivo", cls:""},
-  conectando:   {icon:"🔄", text:"Conectando…", cls:"show"},
-  sincronizando:{icon:"🔄", text:"Sincronizando…", cls:"show"},
-  sincronizado: {icon:"🌐", text:"Sincronizado con la nube", cls:"show"},
-  error:        {icon:"⚠️", text:"Sin conexión a la nube (guardado local)", cls:"show error"}
+  local:        {icon:"cloudOff", text:"Solo en este dispositivo", cls:""},
+  conectando:   {icon:"sync", text:"Conectando…", cls:"show"},
+  sincronizando:{icon:"sync", text:"Sincronizando…", cls:"show"},
+  sincronizado: {icon:"cloud", text:"Sincronizado con la nube", cls:"show"},
+  error:        {icon:"alertTriangle", text:"Sin conexión a la nube (guardado local)", cls:"show error"}
 };
 
 function initFirebaseSync(){
@@ -360,6 +642,7 @@ function applyRemoteState(remote){
   if(isEditing){ pendingRemoteState = remote; return; }
   state = Object.assign(defaultState(), remote);
   state.operacion = Object.assign(defaultState().operacion, remote.operacion||{});
+  state.publicacion = Object.assign(defaultState().publicacion, remote.publicacion||{});
   ensureHorarioShape();
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
   render();
@@ -393,28 +676,140 @@ function setSyncBadge(status){
   const el = document.getElementById("syncBadge");
   if(!el) return;
   const s = SYNC_STATUS_MAP[status] || SYNC_STATUS_MAP.local;
-  el.textContent = `${s.icon} ${s.text}`;
+  el.innerHTML = `${ic(s.icon)}<span>${s.text}</span>`;
   el.className = "sync-badge " + s.cls;
 }
 
 function uid(){ return Math.random().toString(36).slice(2,9); }
 
+/* =========================================================
+   TOASTS / SNACKBARS
+========================================================= */
+let toasts = [];
+function showToast(msg, type, icon){
+  const iconMap = {ok:"checkCircle", info:"info", warn:"alertTriangle"};
+  const id = uid();
+  toasts.push({id, msg, type: type||"ok", icon: icon || iconMap[type] || "checkCircle"});
+  renderToastStack();
+  setTimeout(()=>{
+    toasts = toasts.filter(t=>t.id!==id);
+    renderToastStack();
+  }, 2700);
+}
+function renderToastStack(){
+  const el = document.getElementById("toastStack");
+  if(!el) return;
+  el.innerHTML = toasts.map(t=>`<div class="toast ${t.type}">${ic(t.icon)}<span>${escapeHtml(t.msg)}</span></div>`).join("");
+}
+
+/* =========================================================
+   AVATARES CON INICIALES
+========================================================= */
+const AVATAR_COLORS = ["#D2202C","#2E5A9E","#1E8A57","#C05A1D","#7A4FBF","#B08000","#0E7C86","#A8325E"];
+function avatarColor(nombre){
+  let hash = 0;
+  const s = String(nombre||"?");
+  for(let i=0;i<s.length;i++){ hash = s.charCodeAt(i) + ((hash<<5)-hash); }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+function initials(nombre){
+  const parts = String(nombre||"").trim().split(/\s+/).filter(Boolean);
+  if(parts.length===0) return "?";
+  if(parts.length===1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0]+parts[1][0]).toUpperCase();
+}
+function avatarHtml(nombre){
+  return `<span class="avatar" style="background:${avatarColor(nombre)}">${initials(nombre)}</span>`;
+}
+
+/* =========================================================
+   CONFIRMACIÓN ANIMADA AL PUBLICAR
+========================================================= */
+function mostrarConfirmacionPublicacion(){
+  const prevOverlay = document.querySelector(".publish-confirm-overlay");
+  if(prevOverlay) prevOverlay.remove();
+  const overlay = document.createElement("div");
+  overlay.className = "publish-confirm-overlay";
+  overlay.innerHTML = `
+    <div class="publish-confirm-card">
+      <div class="publish-check-circle">${ic('check')}</div>
+      <div class="publish-confirm-text">Horario publicado</div>
+      <div class="publish-confirm-sub">El equipo ya puede ver la versión más reciente.</div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener("click", ()=> overlay.remove());
+  setTimeout(()=>{ if(overlay.isConnected) overlay.remove(); }, 1500);
+}
+
+/* =========================================================
+   NÚMEROS QUE "CUENTAN" AL CARGAR EL PANEL
+========================================================= */
+function formatKpiValue(fmt, value){
+  if(fmt==="money") return value>0.5 ? '$'+Math.round(value).toLocaleString('es-MX') : '—';
+  if(fmt==="hours") return value.toFixed(1)+" h";
+  if(fmt==="pct") return value.toFixed(0)+"%";
+  if(fmt==="int") return String(Math.round(value));
+  return String(Math.round(value));
+}
+function animateCountUp(el){
+  const target = parseFloat(el.dataset.count);
+  const fmt = el.dataset.fmt;
+  if(!isFinite(target)) return;
+  const duration = 900;
+  const t0 = performance.now();
+  function step(now){
+    const t = Math.min(1, (now-t0)/duration);
+    const eased = 1-Math.pow(1-t, 3);
+    el.textContent = formatKpiValue(fmt, target*eased);
+    if(t<1) requestAnimationFrame(step);
+    else el.textContent = formatKpiValue(fmt, target);
+  }
+  requestAnimationFrame(step);
+}
+function animateDashboardEntrance(){
+  document.querySelectorAll(".kpi-value[data-count]").forEach(el=> animateCountUp(el));
+  document.querySelectorAll(".bars-svg rect.cov-bar").forEach(rect=>{
+    const targetH = rect.getAttribute("height");
+    const targetY = rect.getAttribute("y");
+    const base = rect.dataset.base;
+    // colapsa la barra a 0 y fuerza reflow antes de animar hacia su valor real
+    rect.style.transition = "none";
+    rect.setAttribute("height", "0");
+    rect.setAttribute("y", base);
+    void rect.getBBox();
+    requestAnimationFrame(()=>{
+      rect.style.transition = "";
+      requestAnimationFrame(()=>{
+        rect.setAttribute("height", targetH);
+        rect.setAttribute("y", targetY);
+      });
+    });
+  });
+}
+
+/* =========================================================
+   ESTADO
+========================================================= */
 function defaultState(){
-  const c = (nombre,puesto)=>({id:uid(), nombre, puesto, maxHoras:48});
+  const c = (nombre,puesto,sueldoHora)=>({id:uid(), nombre, puesto, maxHoras:48, sueldoHora});
   return {
     tienda:"OXXO — Sucursal",
-    activeTab:"colaboradores",
+    activeTab:"dashboard",
     semanaLabel:"",
     filtroColab:"",
+    theme:"light",
+    vistaHorario:"tarjetas",
+    plantillaSemana:null,
+    historialPublicaciones:[],
     maxHorasSemana:48,
     operacion:{ is24h:true, apertura:"06:00", cierre:"23:59" },
     colaboradores:[
-      c("Ana Torres","Líder de Tienda"),
-      c("Luis Medina","Encargado de Turno"),
-      c("Karla Ruiz","Encargado de Turno"),
-      c("Jorge Salas","Cajero/Auxiliar"),
-      c("Paola Nuñez","Cajero/Auxiliar"),
-      c("Iván Cruz","Cajero/Auxiliar"),
+      c("Ana Torres","Líder de Tienda",42),
+      c("Luis Medina","Encargado de Turno",34),
+      c("Karla Ruiz","Encargado de Turno",34),
+      c("Jorge Salas","Cajero/Auxiliar",26),
+      c("Paola Nuñez","Cajero/Auxiliar",26),
+      c("Iván Cruz","Cajero/Auxiliar",26),
     ],
     turnos:[
       {id:"matutino", nombre:"Matutino", inicio:"07:00", fin:"15:00", minPersonal:2},
@@ -422,11 +817,14 @@ function defaultState(){
       {id:"nocturno", nombre:"Nocturno", inicio:"23:00", fin:"07:00", minPersonal:2},
     ],
     // horario[dia][colabId] = { estado:'trabaja', inicio, fin }  |  { estado:'descanso' }
-    horario:{}
+    horario:{},
+    // control de publicación del horario, para la alerta "cambios sin publicar"
+    publicacion:{ publicado:false, fecha:null, snapshot:null }
   };
 }
 
 let state = defaultState();
+let notifOpen = false; // estado transitorio de UI, no se guarda
 
 /* ---------- Deshacer (historial simple) ---------- */
 const HISTORY_LIMIT = 15;
@@ -444,6 +842,7 @@ function deshacer(){
     const parsed = JSON.parse(prev);
     state = Object.assign(defaultState(), parsed);
     state.operacion = Object.assign(defaultState().operacion, parsed.operacion||{});
+    state.publicacion = Object.assign(defaultState().publicacion, parsed.publicacion||{});
     ensureHorarioShape();
     saveState();
     render();
@@ -457,19 +856,17 @@ function ensureHorarioShape(){
       if(!state.colaboradores.find(c=>c.id===cid)) delete state.horario[d][cid];
     });
   }
+  state.colaboradores.forEach(c=>{ if(c.sueldoHora==null) c.sueldoHora = 0; });
 }
 
-let saveIndicatorTimeout = null;
+let saveToastTimeout = null;
 function saveState(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   catch(e){ console.error("No se pudo guardar en este equipo:", e); }
   pushToFirebase(false);
-  const ind = document.getElementById("saveIndicator");
-  if(ind){
-    ind.classList.add("show");
-    clearTimeout(saveIndicatorTimeout);
-    saveIndicatorTimeout = setTimeout(()=> ind.classList.remove("show"), 1400);
-  }
+  // snackbar discreto de "Guardado", agrupado si hay varios cambios seguidos
+  clearTimeout(saveToastTimeout);
+  saveToastTimeout = setTimeout(()=> showToast("Guardado", "ok", "check"), 650);
 }
 function loadState(){
   try{
@@ -478,6 +875,7 @@ function loadState(){
       const parsed = JSON.parse(raw);
       state = Object.assign(defaultState(), parsed);
       state.operacion = Object.assign(defaultState().operacion, parsed.operacion||{});
+      state.publicacion = Object.assign(defaultState().publicacion, parsed.publicacion||{});
     }
   }catch(e){ /* sin datos guardados aún en este equipo */ }
   ensureHorarioShape();
@@ -617,6 +1015,61 @@ function operatingWindow(){
 }
 
 /* =========================================================
+   MÉTRICAS DE PANEL (dashboard pro): costo de nómina,
+   cobertura %, huecos, horas por puesto, cobertura por hora
+========================================================= */
+function buildDashboardMetrics(){
+  ensureHorarioShape();
+  const coverage = buildCoverage();
+  const {open, close} = operatingWindow();
+
+  let minutosOperacion = 0, minutosCubiertos = 0, huecos = 0, minutosDescubiertos = 0;
+  const scanCoverage = (dayIdx, arr, startMin, endMin)=>{
+    let i = Math.max(0,startMin);
+    const end = Math.min(1440,endMin);
+    while(i<end){
+      const cnt = arr[i];
+      let j = i;
+      while(j<end && arr[j]===cnt) j++;
+      const dur = j-i;
+      minutosOperacion += dur;
+      if(cnt>0) minutosCubiertos += dur;
+      else if(dur>=15){ huecos++; minutosDescubiertos += dur; }
+      i = j;
+    }
+  };
+  for(let d=0; d<7; d++){
+    scanCoverage(d, coverage[d], open, Math.min(close,1440));
+    if(close>1440 && d+1<7) scanCoverage(d+1, coverage[d+1], 0, close-1440);
+  }
+  const coberturaPct = minutosOperacion>0 ? (minutosCubiertos/minutosOperacion)*100 : 100;
+
+  // cobertura promedio por hora del día (0-23), a través de los 7 días
+  const coberturaPorHora = new Array(24).fill(0);
+  for(let h=0; h<24; h++){
+    let suma = 0;
+    for(let d=0; d<7; d++){
+      for(let m=h*60; m<h*60+60; m+=10) suma += coverage[d][m];
+    }
+    coberturaPorHora[h] = suma / (7*6); // promedio de personas presentes
+  }
+
+  // horas y costo por puesto
+  const horasPorPuesto = {}; PUESTOS.forEach(p=> horasPorPuesto[p]=0);
+  let costoNomina = 0, horasProgramadas = 0;
+  state.colaboradores.forEach(c=>{
+    const { total } = calcTotalColab(c.id);
+    horasProgramadas += total;
+    horasPorPuesto[c.puesto] = (horasPorPuesto[c.puesto]||0) + total;
+    costoNomina += total * (c.sueldoHora||0);
+  });
+
+  const capacidadMaxima = state.colaboradores.reduce((s,c)=> s + (c.maxHoras||state.maxHorasSemana), 0);
+
+  return { coberturaPct, huecos, minutosDescubiertos, coberturaPorHora, horasPorPuesto, costoNomina, horasProgramadas, capacidadMaxima };
+}
+
+/* =========================================================
    VALIDACIÓN
 ========================================================= */
 function validar(){
@@ -689,6 +1142,15 @@ function validar(){
     }
   });
 
+  // 6) Estado de publicación
+  const pub = state.publicacion || {publicado:false};
+  const horarioActual = JSON.stringify(state.horario);
+  if(!pub.publicado){
+    issues.push({tipo:"info", msg:`El horario de esta semana aún no se ha publicado. Usa "Publicar horario" en la pestaña Horario semanal cuando esté listo para el equipo.`});
+  } else if(pub.snapshot !== horarioActual){
+    issues.push({tipo:"warning", msg:`Hay cambios en el horario desde la última publicación (${formatFecha(pub.fecha)}). Vuelve a publicar para que el equipo vea la versión más reciente.`});
+  }
+
   const errores = issues.filter(i=>i.tipo==="error");
   const advertencias = issues.filter(i=>i.tipo==="warning");
   const info = issues.filter(i=>i.tipo==="info");
@@ -722,10 +1184,32 @@ function scanSegment(dayIdx, coverageArr, startMin, endMin, issues){
   }
 }
 
+function formatFecha(iso){
+  if(!iso) return "sin fecha";
+  try{
+    const d = new Date(iso);
+    return d.toLocaleDateString("es-MX",{day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"});
+  }catch(e){ return "sin fecha"; }
+}
+
+function publicarHorario(){
+  ensureHorarioShape();
+  const prev = state.publicacion;
+  if(prev && prev.publicado && prev.snapshot){
+    state.historialPublicaciones = state.historialPublicaciones || [];
+    state.historialPublicaciones.unshift({ fecha: prev.fecha, snapshot: prev.snapshot });
+    state.historialPublicaciones = state.historialPublicaciones.slice(0, 12);
+  }
+  state.publicacion = { publicado:true, fecha: new Date().toISOString(), snapshot: JSON.stringify(state.horario) };
+  saveState();
+  render();
+  mostrarConfirmacionPublicacion();
+  showToast("Horario publicado", "ok", "check");
+}
+
 /* =========================================================
    RENDER
 ========================================================= */
-/* ---------- Utilidades para no perder scroll/foco al re-dibujar ---------- */
 function getActiveSelector(){
   const el = document.activeElement;
   if(!el || el === document.body || !el.tagName) return null;
@@ -739,9 +1223,8 @@ function getActiveSelector(){
   return `${idSel}${tag}${cls}${dataSel}`;
 }
 
+let lastActiveTab = null;
 function render(){
-  // Guarda posición de scroll (página + scroll horizontal de la grilla) y el elemento con foco,
-  // para restaurarlos después de redibujar y evitar que la pantalla "brinque" al editar horarios.
   const scrollY = window.scrollY;
   const scrollX = window.scrollX;
   const gridWrapBefore = document.querySelector(".grid-wrap");
@@ -752,16 +1235,28 @@ function render(){
   const selStart = activeEl && "selectionStart" in activeEl ? activeEl.selectionStart : null;
   const selEnd = activeEl && "selectionEnd" in activeEl ? activeEl.selectionEnd : null;
 
+  const tabChanged = lastActiveTab !== state.activeTab;
+  const enteringDashboard = tabChanged && state.activeTab === "dashboard";
+  lastActiveTab = state.activeTab;
+
   const app = document.getElementById("app");
   app.innerHTML = `
-    ${renderHeader()}
-    <main>${renderTab()}</main>
-    <p class="footer-note">Basado en la Ley Federal del Trabajo (MX) — jornada diurna 6:00–20:00 (máx. 8h), nocturna 20:00–6:00 (máx. 7h), mixta (máx. 7.5h, con menos de 3.5h en horario nocturno). Verifica siempre las políticas internas de OXXO/FEMSA vigentes.</p>
+    <div class="shell" data-theme="${state.theme==='dark' ? 'dark' : 'light'}">
+      ${renderSidebar()}
+      <div class="main-wrap">
+        ${renderTopbar()}
+        <main><div class="${tabChanged ? 'tab-anim' : ''}" id="tabContent">${renderTab()}</div></main>
+        <p class="footer-note">Basado en la Ley Federal del Trabajo (MX) — jornada diurna 6:00–20:00 (máx. 8h), nocturna 20:00–6:00 (máx. 7h), mixta (máx. 7.5h, con menos de 3.5h en horario nocturno). Verifica siempre las políticas internas de OXXO/FEMSA vigentes.</p>
+      </div>
+    </div>
     ${renderPrintArea()}
+    <div class="toast-stack" id="toastStack"></div>
   `;
   wireEvents();
+  renderToastStack();
 
-  // Restaura scroll y foco después de que el navegador aplique el nuevo DOM
+  if(enteringDashboard) animateDashboardEntrance();
+
   requestAnimationFrame(()=>{
     window.scrollTo(scrollX, scrollY);
     const gridWrapAfter = document.querySelector(".grid-wrap");
@@ -784,70 +1279,250 @@ function render(){
   });
 }
 
-function renderHeader(){
-  const s = SYNC_STATUS_MAP[currentSyncStatus] || SYNC_STATUS_MAP.local;
+const NAV_ITEMS = [
+  {id:"dashboard", label:"Panel", icon:"dashboard"},
+  {id:"colaboradores", label:"Colaboradores", icon:"team"},
+  {id:"turnos", label:"Plantillas", icon:"clock"},
+  {id:"horario", label:"Horario", icon:"calendar"},
+  {id:"resumen", label:"Validación", icon:"shield"},
+];
+
+function countAlerts(){
+  const issues = validar();
+  return issues.filter(i=>i.tipo==="error").length + issues.filter(i=>i.tipo==="warning").length;
+}
+
+function renderSidebar(){
+  const errCount = countAlerts();
+  const items = NAV_ITEMS.map(it=>{
+    const badge = it.id==="resumen" && errCount>0 ? `<span class="nav-badge">${errCount>9?'9+':errCount}</span>` : "";
+    return `<button class="nav-item ${state.activeTab===it.id?'active':''}" data-tab="${it.id}">${ic(it.icon)}<span>${it.label}</span>${badge}</button>`;
+  }).join("");
   return `
-  <div class="marquee">
-    <div class="marquee-top">
-      <div class="brandmark">
-        <div class="brandtile">OX</div>
-        <div>
-          <h1>Horarios de Colaboradores</h1>
-          <p class="subt">Planeador de turnos estilo tienda de conveniencia</p>
-        </div>
-      </div>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <span class="sync-badge ${s.cls}" id="syncBadge">${s.icon} ${s.text}</span>
-        <span class="save-indicator" id="saveIndicator"><span class="dot-save"></span>Guardado</span>
-        <input class="store-input" id="tiendaInput" type="text" value="${escapeHtml(state.tienda)}" placeholder="Nombre de la sucursal">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">${ic("building")}</div>
+      <div class="brand-text">
+        <div class="name">Horarios</div>
+        <div class="tag">Panel de operaciones</div>
       </div>
     </div>
-    <div class="tabs">
-      ${tabBtn("colaboradores","Colaboradores")}
-      ${tabBtn("turnos","Plantillas y reglas")}
-      ${tabBtn("horario","Horario semanal")}
-      ${tabBtn("resumen","Resumen y validación")}
+    <nav class="nav">${items}</nav>
+    <div class="sidebar-foot">
+      <button class="theme-toggle ${state.theme==='dark'?'on':''}" id="themeToggle" aria-label="Alternar modo oscuro">
+        <span class="lbl">${ic('moon')}Modo oscuro</span>
+        <span class="switch"><span class="knob"></span></span>
+      </button>
+      <div class="law-chip">${ic("shield")}<span>Validación automática contra la Ley Federal del Trabajo en cada turno que capturas.</span></div>
+    </div>
+  </aside>`;
+}
+
+function renderTopbar(){
+  const s = SYNC_STATUS_MAP[currentSyncStatus] || SYNC_STATUS_MAP.local;
+  const titles = {dashboard:["Panel","Resumen operativo de la semana"], colaboradores:["Colaboradores","Equipo, puestos y sueldo por hora"], turnos:["Plantillas y reglas","Atajos de turno y horario de operación"], horario:["Horario semanal","Captura y publica los turnos de cada colaborador"], resumen:["Validación","Cobertura, legalidad y descansos"]};
+  const [title, sub] = titles[state.activeTab] || titles.dashboard;
+  return `
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">${title}</div>
+      <div class="topbar-sub">${sub}</div>
+    </div>
+    <div class="topbar-right">
+      <input class="store-input" id="tiendaInput" type="text" value="${escapeHtml(state.tienda)}" placeholder="Nombre de la sucursal">
+      <span class="sync-badge ${s.cls}" id="syncBadge">${ic(s.icon)}<span>${s.text}</span></span>
+      ${renderNotifBell()}
     </div>
   </div>`;
 }
-function tabBtn(id,label){
-  return `<button class="tab ${state.activeTab===id?'active':''}" data-tab="${id}">${label}</button>`;
+
+function renderNotifBell(){
+  const issues = validar();
+  const relevantes = issues.filter(i=>i.tipo!=="ok");
+  const count = relevantes.filter(i=>i.tipo==="error").length + relevantes.filter(i=>i.tipo==="warning").length;
+  const iconFor = t=> t==="error"?"alertCircle":t==="warning"?"alertTriangle":"info";
+  const clsFor = t=> t;
+  const top = relevantes.slice(0,8);
+  const list = top.length
+    ? top.map(i=>`<div class="notif-item"><span class="notif-icon ${clsFor(i.tipo)}">${ic(iconFor(i.tipo))}</span><span>${i.msg}</span></div>`).join("")
+    : `<div class="notif-empty">Sin observaciones pendientes — todo en orden.</div>`;
+  return `
+  <div class="notif-wrap">
+    <button class="icon-btn" id="notifBtn" aria-label="Notificaciones">${ic("bell")}${count>0?`<span class="ping">${count>9?'9+':count}</span>`:""}</button>
+    ${notifOpen ? `
+    <div class="notif-panel" id="notifPanel">
+      <div class="notif-panel-head"><h3>Alertas y pendientes</h3></div>
+      ${list}
+      ${issues.length>top.length ? `<div class="notif-foot"><button data-goto-validacion>Ver todas en Validación →</button></div>` : ""}
+    </div>` : ""}
+  </div>`;
 }
 
 function renderTab(){
+  if(state.activeTab==="dashboard") return renderDashboard();
   if(state.activeTab==="colaboradores") return renderColaboradores();
   if(state.activeTab==="turnos") return renderTurnos();
   if(state.activeTab==="horario") return renderHorario();
   return renderResumen();
 }
 
+/* ---------------- Panel (dashboard) ---------------- */
+function renderDashboard(){
+  if(state.colaboradores.length===0){
+    return `
+    <div class="panel">
+      <div class="zero-state">
+        ${ic("team")}
+        <div class="t">Aún no hay colaboradores registrados</div>
+        <div class="d">Agrega a tu equipo en la pestaña Colaboradores para empezar a ver el costo de nómina, la cobertura y las alertas del horario.</div>
+        <div style="margin-top:14px"><button class="btn btn-primary" data-tab="colaboradores">${ic("plus")}Ir a Colaboradores</button></div>
+      </div>
+    </div>`;
+  }
+
+  const m = buildDashboardMetrics();
+  const issues = validar().filter(i=>i.tipo!=="ok").slice(0,5);
+
+  const capPct = m.capacidadMaxima>0 ? Math.round((m.horasProgramadas/m.capacidadMaxima)*100) : 0;
+  const kpis = `
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-top"><span class="kpi-label">Costo de nómina semanal</span><span class="kpi-icon red">${ic('dollar')}</span></div>
+      <div class="kpi-value num" data-count="${m.costoNomina}" data-fmt="money">${m.costoNomina>0 ? '$'+m.costoNomina.toLocaleString('es-MX',{maximumFractionDigits:0}) : '—'}</div>
+      <div class="kpi-foot">${m.costoNomina>0 ? 'Con el sueldo por hora capturado por colaborador' : 'Captura el sueldo/hora en Colaboradores para verlo'}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-top"><span class="kpi-label">Horas programadas</span><span class="kpi-icon blue">${ic('clock')}</span></div>
+      <div class="kpi-value num" data-count="${m.horasProgramadas}" data-fmt="hours">${m.horasProgramadas.toFixed(1)} h</div>
+      <div class="kpi-foot">de ${m.capacidadMaxima} h de capacidad semanal (${capPct}%)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-top"><span class="kpi-label">Cobertura horaria</span><span class="kpi-icon green">${ic('target')}</span></div>
+      <div class="kpi-value num" data-count="${m.coberturaPct}" data-fmt="pct">${m.coberturaPct.toFixed(0)}%</div>
+      <div class="kpi-foot ${m.coberturaPct<99.95?'bad':'good'}">${m.coberturaPct>=99.95 ? 'Tienda cubierta en todo el horario de operación' : 'del horario de operación con al menos 1 persona'}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-top"><span class="kpi-label">Turnos sin cubrir</span><span class="kpi-icon amber">${ic('gap')}</span></div>
+      <div class="kpi-value num" data-count="${m.huecos}" data-fmt="int">${m.huecos}</div>
+      <div class="kpi-foot ${m.huecos>0?'bad':'good'}">${m.huecos>0 ? (Math.round(m.minutosDescubiertos/6)/10)+' h sin nadie en tienda esta semana' : 'Sin huecos detectados'}</div>
+    </div>
+  </div>`;
+
+  const puestoColors = {"Líder de Tienda":"var(--red-deep)","Encargado de Turno":"var(--amber)","Cajero/Auxiliar":"var(--green)"};
+  const donutSegs = PUESTOS.map(p=>({label:p, value:m.horasPorPuesto[p]||0, color:puestoColors[p]}));
+  const totalHorasPuesto = donutSegs.reduce((s,x)=>s+x.value,0);
+  const legend = donutSegs.map(s=>`<div class="chart-legend-item"><span class="sw" style="background:${s.color}"></span><span class="lbl">${s.label}</span><span class="val">${s.value.toFixed(1)} h</span></div>`).join("");
+
+  const chartRow = `
+  <div class="chart-row">
+    <div class="panel">
+      <div class="panel-head"><div><h2>Cobertura por hora del día</h2><p class="hint">Promedio de personas en tienda cada hora, sumando los 7 días. En rojo, las horas con menos de 1 persona en promedio.</p></div></div>
+      ${m.coberturaPorHora.some(v=>v>0) ? renderCoberturaBarChart(m.coberturaPorHora) : `<div class="empty-chart">Agrega horarios en la pestaña Horario semanal para ver esta gráfica.</div>`}
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h2>Horas por puesto</h2><p class="hint">Distribución de horas programadas esta semana.</p></div></div>
+      <div style="display:flex; justify-content:center">${totalHorasPuesto>0 ? svgDonut(donutSegs) : `<div class="empty-chart">Aún no hay horas programadas.</div>`}</div>
+      <div class="chart-legend">${legend}</div>
+    </div>
+  </div>`;
+
+  const iconFor = t=> t==="error"?"alertCircle":t==="warning"?"alertTriangle":"info";
+  const alertFeed = issues.length ? issues.map(i=>`<div class="alert-row"><span class="notif-icon ${i.tipo}">${ic(iconFor(i.tipo))}</span><span>${i.msg}</span></div>`).join("")
+    : `<div class="alert-row"><span class="notif-icon ok">${ic('checkCircle')}</span><span>No hay observaciones pendientes: el horario está completo y en regla.</span></div>`;
+
+  return `
+  ${kpis}
+  ${chartRow}
+  <div class="panel">
+    <div class="panel-head">
+      <div><h2>Últimas alertas</h2><p class="hint">Los pendientes más relevantes del horario de esta semana.</p></div>
+      <button class="btn btn-ghost btn-sm" data-goto-validacion>${ic('shield')}Ver validación completa</button>
+    </div>
+    <div class="alert-feed">${alertFeed}</div>
+  </div>`;
+}
+
+function renderCoberturaBarChart(values){
+  const w=640, h=190, padL=6, padR=6, padT=14, padB=26;
+  const usableW = w-padL-padR, usableH = h-padT-padB;
+  const maxV = Math.max(2, ...values);
+  const bw = usableW/values.length;
+  const baseY = padT+usableH;
+
+  const umbralY = baseY - (1/maxV)*usableH;
+
+  const bars = values.map((v,i)=>{
+    const bh = Math.max(1.5, (v/maxV)*usableH);
+    const x = padL + i*bw + bw*0.16;
+    const y = baseY - bh;
+    const bwidth = bw*0.68;
+    const risky = v < 1;
+    const color = risky ? "var(--red)" : "var(--ink-2)";
+    return `<rect class="cov-bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bwidth.toFixed(1)}" height="${bh.toFixed(1)}" rx="2.5" fill="${color}" data-base="${baseY.toFixed(1)}"><title>${String(i).padStart(2,'0')}:00 h — ${v.toFixed(1)} persona(s) en promedio</title></rect>`;
+  }).join("");
+
+  const ticks = [0,3,6,9,12,15,18,21].map(hr=>{
+    const x = padL + hr*bw + bw/2;
+    return `<text x="${x.toFixed(1)}" y="${h-8}" text-anchor="middle" font-size="10.5">${String(hr).padStart(2,'0')}h</text>`;
+  }).join("");
+
+  return `<svg class="bars-svg" viewBox="0 0 ${w} ${h}" width="100%" height="190" preserveAspectRatio="none">
+    <line x1="${padL}" y1="${umbralY.toFixed(1)}" x2="${w-padR}" y2="${umbralY.toFixed(1)}" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="${padL}" y1="${baseY}" x2="${w-padR}" y2="${baseY}" stroke="var(--line)" stroke-width="1.2"/>
+    ${bars}
+    ${ticks}
+  </svg>`;
+}
+
+function svgDonut(segments){
+  const size=168, cx=size/2, cy=size/2, r=60, sw=24;
+  const total = segments.reduce((s,x)=>s+x.value,0) || 1;
+  const circ = 2*Math.PI*r;
+  let acc = 0;
+  const circles = segments.filter(s=>s.value>0).map(seg=>{
+    const frac = seg.value/total;
+    const dash = Math.max(0, frac*circ - 1.5);
+    const gap = circ-dash;
+    const rotate = (acc/total)*360 - 90;
+    acc += seg.value;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}" stroke-width="${sw}" stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}" stroke-linecap="round" transform="rotate(${rotate.toFixed(1)} ${cx} ${cy})"/>`;
+  }).join("");
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
+    ${circles}
+    <text x="${cx}" y="${cy-3}" text-anchor="middle" style="font-family:var(--font-display); font-weight:700; font-size:19px; fill:var(--ink);">${total.toFixed(0)}h</text>
+    <text x="${cx}" y="${cy+15}" text-anchor="middle" style="font-size:10px; fill:var(--muted);">programadas</text>
+  </svg>`;
+}
+
 /* ---------------- Colaboradores ---------------- */
 function renderColaboradores(){
   const rows = state.colaboradores.map(c=>`
     <tr>
-      <td><input type="text" class="colab-nombre" data-id="${c.id}" value="${escapeHtml(c.nombre)}"></td>
+      <td><div class="colab-name-wrap">${avatarHtml(c.nombre)}<input type="text" class="colab-nombre" data-id="${c.id}" value="${escapeHtml(c.nombre)}"></div></td>
       <td>
         <select class="colab-puesto" data-id="${c.id}">
           ${PUESTOS.map(p=>`<option value="${p}" ${c.puesto===p?'selected':''}>${p}</option>`).join("")}
         </select>
       </td>
       <td><input type="number" min="1" max="60" class="colab-horas" data-id="${c.id}" value="${c.maxHoras}" style="width:80px"></td>
-      <td><button class="btn btn-danger btn-sm" data-del-colab="${c.id}">Eliminar</button></td>
+      <td><input type="number" min="0" step="0.5" class="colab-sueldo" data-id="${c.id}" value="${c.sueldoHora||0}" style="width:100px"></td>
+      <td><button class="btn btn-danger btn-sm" data-del-colab="${c.id}">${ic('trash')}</button></td>
     </tr>
   `).join("");
 
   return `
   <div class="panel">
-    <h2>Colaboradores</h2>
-    <p class="hint">Registra al equipo de la tienda: puesto y horas máximas por semana (LFT: 48h). Los horarios de entrada y salida de cada quien se asignan día por día en la pestaña "Horario semanal".</p>
+    <div class="panel-head">
+      <div><h2>Colaboradores</h2><p class="hint">Registra al equipo de la tienda: puesto, horas máximas por semana (LFT: 48h) y sueldo por hora para calcular el costo de nómina en el Panel. Los horarios de entrada y salida se asignan día por día en "Horario semanal".</p></div>
+    </div>
     <div style="overflow-x:auto">
     <table>
-      <thead><tr><th>Nombre</th><th>Puesto</th><th>Máx. h/sem</th><th></th></tr></thead>
-      <tbody>${rows || `<tr><td colspan="4" class="empty">Aún no hay colaboradores.</td></tr>`}</tbody>
+      <thead><tr><th>Nombre</th><th>Puesto</th><th>Máx. h/sem</th><th>Sueldo/hora (MXN)</th><th></th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="5" class="empty">Aún no hay colaboradores.</td></tr>`}</tbody>
     </table>
     </div>
-    <div style="margin-top:14px">
-      <button class="btn btn-primary" id="addColab">+ Agregar colaborador</button>
+    <div style="margin-top:16px">
+      <button class="btn btn-primary" id="addColab">${ic('plus')}Agregar colaborador</button>
     </div>
   </div>`;
 }
@@ -879,11 +1554,11 @@ function renderTurnos(){
       <div>
         <label>Clasificación</label>
         <span class="badge-tipo ${badgeClass}"><span class="dot ${dotClass}"></span>${info.tipo} · ${info.horas.toFixed(1)} h</span>
-        <div style="margin-top:4px" class="${info.esLegal?'legal-ok':'legal-bad'}">
+        <div style="margin-top:5px" class="${info.esLegal?'legal-ok':'legal-bad'}">
           ${info.esLegal ? "Dentro del límite legal (máx. "+info.maxLegal+"h)" : "Excede el máximo legal de "+info.maxLegal+"h"}
         </div>
       </div>
-      <div><button class="btn btn-danger btn-sm" data-del-turno="${t.id}">Eliminar</button></div>
+      <div><button class="btn btn-danger btn-sm" data-del-turno="${t.id}">${ic('trash')}</button></div>
     </div>`;
   }).join("");
 
@@ -891,12 +1566,13 @@ function renderTurnos(){
 
   return `
   <div class="panel">
-    <h2>Plantillas rápidas de turno</h2>
-    <p class="hint">Estas plantillas (Matutino, Vespertino, Nocturno...) son solo atajos para llenar el horario más rápido — en "Horario semanal" puedes editar la hora exacta de entrada y salida de cada colaborador cualquier día, aunque no coincida con estas plantillas.</p>
+    <div class="panel-head">
+      <div><h2>Plantillas rápidas de turno</h2><p class="hint">Estas plantillas (Matutino, Vespertino, Nocturno...) son atajos para llenar el horario más rápido — en "Horario semanal" puedes editar la hora exacta de cada colaborador cualquier día, aunque no coincida con estas plantillas.</p></div>
+    </div>
     ${cards || `<p class="empty">No hay plantillas configuradas.</p>`}
-    <button class="btn btn-primary" id="addTurno" style="margin-top:6px">+ Agregar plantilla</button>
+    <button class="btn btn-primary" id="addTurno" style="margin-top:6px">${ic('plus')}Agregar plantilla</button>
 
-    <div class="law-box" style="margin-top:18px">
+    <div class="law-box" style="margin-top:20px">
       <b>Reglas de jornada (Ley Federal del Trabajo, México):</b><br>
       • <b>Diurna</b>: 6:00–20:00 hrs — máximo <b>8 horas</b>.<br>
       • <b>Nocturna</b>: 20:00–6:00 hrs — máximo <b>7 horas</b>.<br>
@@ -904,15 +1580,14 @@ function renderTurnos(){
       Todo colaborador debe tener al menos <b>1 día de descanso</b> por cada 6 días trabajados. Por seguridad, procura que nadie quede solo en tienda en ningún horario.
     </div>
 
-    <div style="margin-top:14px">
+    <div style="margin-top:16px; max-width:280px">
       <label>Máximo de horas semanales por defecto para nuevos colaboradores</label>
-      <input type="number" id="maxHorasDefault" min="1" max="60" value="${state.maxHorasSemana}" style="width:120px">
+      <input type="number" id="maxHorasDefault" min="1" max="60" value="${state.maxHorasSemana}">
     </div>
   </div>
 
   <div class="panel">
-    <h2>Horario de operación de la tienda</h2>
-    <p class="hint">Se usa para revisar que todas las horas en que la tienda está abierta queden cubiertas por al menos una persona.</p>
+    <div class="panel-head"><div><h2>Horario de operación de la tienda</h2><p class="hint">Se usa para revisar que todas las horas en que la tienda está abierta queden cubiertas por al menos una persona.</p></div></div>
     <div class="op-row">
       <label class="op-check"><input type="checkbox" id="op24h" ${op.is24h?'checked':''}> Tienda abierta 24 horas</label>
       <div class="op-field">
@@ -961,7 +1636,7 @@ function renderHorario(){
 
       if(entry && entry.estado==="descanso"){
         return `<td><div class="cell descanso">
-          <div class="descanso-label">😴 Descanso</div>
+          <div class="descanso-label">${ic('moon')}Descanso</div>
           <div class="cell-actions">
             <button class="btn btn-xs btn-ghost" data-set-trabaja="${key}">Poner horario</button>
           </div>
@@ -976,7 +1651,7 @@ function renderHorario(){
             <input type="time" class="cell-inicio" data-key="${key}" value="${entry.inicio}">
             <input type="time" class="cell-fin" data-key="${key}" value="${entry.fin}">
           </div>
-          <div class="cell-badge ${info.esLegal?'ok':'bad'}">${info.tipo} · ${info.horas.toFixed(1)}h ${info.esLegal?'✓':'⚠ máx '+info.maxLegal+'h'}</div>
+          <div class="cell-badge ${info.esLegal?'ok':'bad'}">${ic(info.esLegal?'check':'alertTriangle')}${info.tipo} · ${info.horas.toFixed(1)}h ${info.esLegal?'':'· máx '+info.maxLegal+'h'}</div>
           <div class="cell-actions" style="margin-top:6px">
             <select class="quick-select" data-quick="${key}"><option value="">plantilla…</option>${quickOptions}</select>
             <button class="btn btn-xs btn-outline-rest" data-set-descanso="${key}">Descanso</button>
@@ -1002,11 +1677,19 @@ function renderHorario(){
     const pct = Math.min(100, (total/maxC)*100);
 
     return `<tr>
-      <td class="colab-label">${escapeHtml(c.nombre)}<span class="tag ${puestoClass}" style="margin-top:4px">${c.puesto}</span></td>
+      <td class="colab-label">
+        <div class="colab-label-inner">
+          ${avatarHtml(c.nombre)}
+          <div class="colab-label-text">
+            <span>${escapeHtml(c.nombre)}</span>
+            <span class="tag ${puestoClass}" style="margin-top:4px; width:fit-content">${c.puesto}</span>
+          </div>
+        </div>
+      </td>
       ${cells}
       <td class="total-col">
         <div class="total-cell ${over?'over':''}">
-          <div class="horas-num">${total.toFixed(1)} h</div>
+          <div class="horas-num num">${total.toFixed(1)} h</div>
           <div class="horas-max">de ${maxC} h · ${dias} día(s)</div>
           <div class="barwrap"><div class="bar ${over?'over':''}" style="width:${pct}%"></div></div>
         </div>
@@ -1016,29 +1699,48 @@ function renderHorario(){
 
   const sinResultados = filtro && colabsVisibles.length===0;
 
+  const pub = state.publicacion || {publicado:false};
+  const horarioActual = JSON.stringify(state.horario);
+  const modificado = pub.publicado && pub.snapshot !== horarioActual;
+  let pubChip;
+  if(!pub.publicado) pubChip = `<span class="publish-chip none">${ic('info')}Sin publicar</span>`;
+  else if(modificado) pubChip = `<span class="publish-chip warn">${ic('alertTriangle')}Cambios sin publicar</span>`;
+  else pubChip = `<span class="publish-chip ok">${ic('check')}Publicado ${formatFecha(pub.fecha)}</span>`;
+
   return `
   <div class="panel">
     <div class="toolbar">
       <div>
         <h2 style="margin-bottom:2px">Horario semanal</h2>
-        <p class="hint" style="margin-bottom:0">Pon la hora de entrada y salida exacta de cada colaborador cada día — no tienen que coincidir con Matutino/Vespertino/Nocturno. La app clasifica el tipo de jornada y valida el máximo legal al instante. Usa "Descanso" para marcar sus días libres.</p>
+        <p class="hint" style="margin-bottom:8px">Pon la hora de entrada y salida exacta de cada colaborador cada día — no tienen que coincidir con Matutino/Vespertino/Nocturno. La app clasifica el tipo de jornada y valida el máximo legal al instante. Usa "Descanso" para marcar sus días libres.</p>
+        ${pubChip}
       </div>
       <div class="toolbar-actions">
+        <div class="view-toggle">
+          <button data-view="tarjetas" class="${state.vistaHorario!=='compacta'?'active':''}">Tarjetas</button>
+          <button data-view="compacta" class="${state.vistaHorario==='compacta'?'active':''}">Compacta</button>
+        </div>
         <div class="search-field">
+          ${ic('search')}
           <input type="text" id="filtroColabInput" placeholder="Buscar colaborador…" value="${escapeHtml(state.filtroColab)}">
         </div>
         <div style="min-width:170px">
           <label>Semana (para imprimir)</label>
           <input type="text" id="semanaLabelInput" placeholder="Ej. 18–24 ago 2026" value="${escapeHtml(state.semanaLabel)}">
         </div>
-        <button class="btn btn-ghost" id="deshacerBtn" ${undoStack.length===0?'disabled style="opacity:.45; cursor:not-allowed;"':''}>↩️ Deshacer</button>
-        <button class="btn btn-ghost" id="exportarCsv">⬇️ Exportar CSV</button>
-        <button class="btn btn-ghost" id="clearHorario">Vaciar horario</button>
-        <button class="btn btn-ghost" id="imprimirHorario">🖨️ Imprimir / PDF</button>
-        <button class="btn btn-amarillo" id="autoOrganizar">⚡ Organizar automáticamente</button>
+        <button class="btn btn-ghost" id="deshacerBtn" ${undoStack.length===0?'disabled':''}>${ic('undo')}Deshacer</button>
+        <button class="btn btn-ghost" id="exportarCsv">${ic('download')}CSV</button>
+        <button class="btn btn-ghost" id="clearHorario">${ic('eraser')}Vaciar</button>
+        <button class="btn btn-ghost" id="imprimirHorario">${ic('printer')}Imprimir / PDF</button>
+        <button class="btn btn-ghost" id="guardarPlantillaSemana" title="Guarda el horario actual como plantilla recurrente">${ic('sparkle')}Guardar plantilla<span class="pro-badge">PRO</span></button>
+        <button class="btn btn-ghost" id="aplicarPlantillaSemana" ${!state.plantillaSemana?'disabled':''} title="Aplica la plantilla semanal guardada">${ic('zap')}Aplicar plantilla<span class="pro-badge">PRO</span></button>
+        <button class="btn btn-dark" id="publicarBtn">${ic('check')}Publicar horario</button>
+        <button class="btn btn-primary" id="autoOrganizar">${ic('zap')}Organizar automáticamente</button>
       </div>
     </div>
-    <div class="grid-wrap">
+    ${state.vistaHorario==='compacta'
+      ? renderHorarioCompacta(colabsVisibles, sinResultados)
+      : `<div class="grid-wrap">
       <table class="sched-grid">
         <thead>${headRow}</thead>
         <tbody>${
@@ -1047,18 +1749,89 @@ function renderHorario(){
             : (rows || `<tr><td colspan="9" class="empty">Agrega colaboradores primero.</td></tr>`)
         }</tbody>
       </table>
-    </div>
+    </div>`}
+  </div>
+  ${renderHistorialPublicaciones()}`;
+}
+
+/* ---------------- Horario semanal: vista compacta ---------------- */
+function compactCell(d, c){
+  const entry = (state.horario[d] && state.horario[d][c.id]) || null;
+  const key = d+"|"+c.id;
+  if(entry && entry.estado==="descanso"){
+    return `<td><div class="compact-cell">
+      <span class="compact-descanso">${ic('moon')}Desc.</span>
+      <button class="btn btn-xs btn-ghost" data-set-trabaja="${key}" title="Poner horario">${ic('plus')}</button>
+    </div></td>`;
+  }
+  if(entry && entry.estado==="trabaja"){
+    const info = calcTurno(entry.inicio, entry.fin);
+    return `<td><div class="compact-cell">
+      <input type="time" class="cell-inicio" data-key="${key}" value="${entry.inicio}">
+      <span class="sep">–</span>
+      <input type="time" class="cell-fin" data-key="${key}" value="${entry.fin}">
+      <span class="cell-badge ${info.esLegal?'ok':'bad'}" title="${info.tipo} · ${info.horas.toFixed(1)}h">${ic(info.esLegal?'check':'alertTriangle')}</span>
+      <button class="btn btn-xs btn-outline-rest" data-set-descanso="${key}" title="Marcar descanso">${ic('moon')}</button>
+    </div></td>`;
+  }
+  return `<td><div class="compact-cell compact-libre">
+    <span>Sin asignar</span>
+    <button class="btn btn-xs btn-ghost" data-set-trabaja="${key}" title="Poner horario">${ic('plus')}</button>
+    <button class="btn btn-xs btn-outline-rest" data-set-descanso="${key}" title="Marcar descanso">${ic('moon')}</button>
+  </div></td>`;
+}
+
+function renderHorarioCompacta(colabsVisibles, sinResultados){
+  const headRow = `<tr><th>Colaborador</th>${DIAS_CORTO.map(d=>`<th>${d}</th>`).join("")}<th>Total</th></tr>`;
+  const rows = colabsVisibles.map(c=>{
+    const cells = DIAS.map((_,d)=> compactCell(d,c)).join("");
+    const { total } = calcTotalColab(c.id);
+    const maxC = c.maxHoras || state.maxHorasSemana;
+    const over = total > maxC + 0.001;
+    return `<tr>
+      <td class="colab-label"><div class="colab-label-inner">${avatarHtml(c.nombre)}<span>${escapeHtml(c.nombre)}</span></div></td>
+      ${cells}
+      <td class="compact-total ${over?'over':''}">${total.toFixed(1)} h</td>
+    </tr>`;
+  }).join("");
+  return `<div class="grid-wrap"><table class="compact-grid">
+    <thead>${headRow}</thead>
+    <tbody>${
+      sinResultados
+        ? `<tr><td colspan="9" class="empty-search">Ningún colaborador coincide con "${escapeHtml(state.filtroColab)}".</td></tr>`
+        : (rows || `<tr><td colspan="9" class="empty">Agrega colaboradores primero.</td></tr>`)
+    }</tbody>
+  </table></div>`;
+}
+
+/* ---------------- Historial de publicaciones (PRO) ---------------- */
+function renderHistorialPublicaciones(){
+  const hist = state.historialPublicaciones || [];
+  if(hist.length===0){
+    return `<div class="panel">
+      <div class="panel-head"><div><h2>Historial de publicaciones<span class="pro-badge">PRO</span></h2><p class="hint">Aquí se guardarán las versiones anteriores del horario publicado, no solo la última.</p></div></div>
+      <p class="empty">Aún no hay versiones anteriores. Se guardará una automáticamente cada vez que publiques un nuevo horario.</p>
+    </div>`;
+  }
+  const items = hist.map((h,i)=>`
+    <div class="history-item">
+      <div class="meta">Versión publicada<span class="small">${formatFecha(h.fecha)}</span></div>
+      <button class="btn btn-ghost btn-sm" data-restore-pub="${i}">${ic('undo')}Restaurar</button>
+    </div>`).join("");
+  return `<div class="panel">
+    <div class="panel-head"><div><h2>Historial de publicaciones<span class="pro-badge">PRO</span></h2><p class="hint">Versiones anteriores del horario publicado. Restaurar reemplaza el horario actual (puedes deshacer después con "Deshacer").</p></div></div>
+    <div class="history-list">${items}</div>
   </div>`;
 }
 
-/* ---------------- Resumen y validación ---------------- */
+/* ---------------- Validación ---------------- */
 function renderResumen(){
   const issues = validar();
   const MAX_SHOW = 40;
   const mostrar = issues.slice(0, MAX_SHOW);
-  const iconFor = t=> t==="error"?"⛔":t==="warning"?"⚠️":t==="info"?"ℹ️":"✅";
+  const iconFor = t=> t==="error"?"alertCircle":t==="warning"?"alertTriangle":t==="info"?"info":"checkCircle";
   const issuesHtml = mostrar.map(i=>`
-    <div class="issue issue-${i.tipo}"><span class="issue-icon">${iconFor(i.tipo)}</span><span>${i.msg}</span></div>
+    <div class="issue issue-${i.tipo}"><span class="issue-icon">${ic(iconFor(i.tipo))}</span><span>${i.msg}</span></div>
   `).join("") + (issues.length>MAX_SHOW ? `<div class="issue-more">y ${issues.length-MAX_SHOW} observación(es) más…</div>` : "");
 
   const maxSemana = state.maxHorasSemana;
@@ -1083,13 +1856,11 @@ function renderResumen(){
 
   return `
   <div class="panel">
-    <h2>Validación del horario</h2>
-    <p class="hint">Con base en las horas exactas que capturaste: cobertura real minuto a minuto, colaboradores solos, jornadas fuera de la ley y descansos.</p>
+    <div class="panel-head"><div><h2>Validación del horario</h2><p class="hint">Con base en las horas exactas que capturaste: cobertura real minuto a minuto, colaboradores solos, jornadas fuera de la ley y descansos.</p></div></div>
     ${issuesHtml}
   </div>
   <div class="panel">
-    <h2>Horas por colaborador</h2>
-    <p class="hint">Carga semanal de cada persona frente a su máximo permitido.</p>
+    <div class="panel-head"><div><h2>Horas por colaborador</h2><p class="hint">Carga semanal de cada persona frente a su máximo permitido.</p></div></div>
     <div class="summary-grid">${cards || `<p class="empty">No hay colaboradores registrados.</p>`}</div>
   </div>`;
 }
@@ -1152,10 +1923,10 @@ function renderPrintArea(){
       </table>
 
       <div class="print-legend">
-        <span class="sw"><span class="box" style="background:#FFF3D6; border:1px solid #F0D998;"></span>Diurno (máx. 8h)</span>
-        <span class="sw"><span class="box" style="background:#E4EAF3; border:1px solid #C7D3E8;"></span>Nocturno (máx. 7h)</span>
-        <span class="sw"><span class="box" style="background:#FBE7D6; border:1px solid #F0C79E;"></span>Mixto (máx. 7.5h)</span>
-        <span class="sw"><span class="box" style="background:#EFE7DA;"></span>Descanso</span>
+        <span class="sw"><span class="box" style="background:#FBF0DA; border:1px solid #F0D998;"></span>Diurno (máx. 8h)</span>
+        <span class="sw"><span class="box" style="background:#E8EFF9; border:1px solid #C7D3E8;"></span>Nocturno (máx. 7h)</span>
+        <span class="sw"><span class="box" style="background:#FBEADB; border:1px solid #F0C79E;"></span>Mixto (máx. 7.5h)</span>
+        <span class="sw"><span class="box" style="background:#EDE6D6;"></span>Descanso</span>
       </div>
 
       <div class="print-signs">
@@ -1207,6 +1978,14 @@ function escapeHtml(s){
 /* =========================================================
    EVENTOS
 ========================================================= */
+// Cierra el panel de notificaciones al hacer clic fuera de él (listener único, fuera de wireEvents)
+document.addEventListener("click", (e)=>{
+  if(notifOpen && !e.target.closest(".notif-wrap")){
+    notifOpen = false;
+    render();
+  }
+});
+
 function wireEvents(){
   document.querySelectorAll("[data-tab]").forEach(btn=>{
     btn.addEventListener("click", ()=>{ state.activeTab = btn.dataset.tab; render(); });
@@ -1215,11 +1994,73 @@ function wireEvents(){
   const tiendaInput = document.getElementById("tiendaInput");
   if(tiendaInput) tiendaInput.addEventListener("change", e=>{ state.tienda = e.target.value; saveState(); });
 
+  const themeToggle = document.getElementById("themeToggle");
+  if(themeToggle){
+    themeToggle.addEventListener("click", ()=>{
+      state.theme = state.theme==="dark" ? "light" : "dark";
+      saveState(); render();
+    });
+  }
+
+  document.querySelectorAll("[data-view]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      state.vistaHorario = btn.dataset.view;
+      saveState(); render();
+    });
+  });
+
+  const guardarPlantillaSemana = document.getElementById("guardarPlantillaSemana");
+  if(guardarPlantillaSemana){
+    guardarPlantillaSemana.addEventListener("click", ()=>{
+      if(!window.confirm("¿Guardar el horario actual como plantilla semanal? Podrás aplicarla con un clic en semanas futuras.")) return;
+      state.plantillaSemana = JSON.parse(JSON.stringify(state.horario));
+      saveState(); render();
+      showToast("Plantilla semanal guardada", "ok", "sparkle");
+    });
+  }
+  const aplicarPlantillaSemana = document.getElementById("aplicarPlantillaSemana");
+  if(aplicarPlantillaSemana){
+    aplicarPlantillaSemana.addEventListener("click", ()=>{
+      if(!state.plantillaSemana) return;
+      if(!window.confirm("¿Aplicar la plantilla semanal guardada? Se sobrescribirá el horario actual de esta semana.")) return;
+      snapshotForUndo();
+      state.horario = JSON.parse(JSON.stringify(state.plantillaSemana));
+      ensureHorarioShape(); saveState(); render();
+      showToast("Plantilla semanal aplicada", "ok", "zap");
+    });
+  }
+  document.querySelectorAll("[data-restore-pub]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const idx = Number(btn.dataset.restorePub);
+      const h = (state.historialPublicaciones||[])[idx];
+      if(!h) return;
+      if(!window.confirm("¿Restaurar esta versión anterior del horario? Reemplazará el horario actual (puedes deshacer después).")) return;
+      snapshotForUndo();
+      try{ state.horario = JSON.parse(h.snapshot); }catch(e){ return; }
+      ensureHorarioShape(); saveState(); render();
+      showToast("Versión restaurada", "info", "undo");
+    });
+  });
+
+  const notifBtn = document.getElementById("notifBtn");
+  if(notifBtn){
+    notifBtn.addEventListener("click", e=>{
+      e.stopPropagation();
+      notifOpen = !notifOpen;
+      render();
+    });
+  }
+  const notifPanel = document.getElementById("notifPanel");
+  if(notifPanel) notifPanel.addEventListener("click", e=> e.stopPropagation());
+  document.querySelectorAll("[data-goto-validacion]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{ notifOpen=false; state.activeTab = "resumen"; render(); });
+  });
+
   // Colaboradores
   const addColab = document.getElementById("addColab");
   if(addColab){
     addColab.addEventListener("click", ()=>{
-      state.colaboradores.push({id:uid(), nombre:"Nuevo colaborador", puesto:"Cajero/Auxiliar", maxHoras: state.maxHorasSemana});
+      state.colaboradores.push({id:uid(), nombre:"Nuevo colaborador", puesto:"Cajero/Auxiliar", maxHoras: state.maxHorasSemana, sueldoHora:0});
       ensureHorarioShape(); saveState(); render();
     });
   }
@@ -1245,7 +2086,13 @@ function wireEvents(){
   document.querySelectorAll(".colab-horas").forEach(inp=>{
     inp.addEventListener("change", e=>{
       const c = state.colaboradores.find(x=>x.id===e.target.dataset.id);
-      if(c){ c.maxHoras = Number(e.target.value)||state.maxHorasSemana; saveState(); }
+      if(c){ c.maxHoras = Number(e.target.value)||state.maxHorasSemana; saveState(); render(); }
+    });
+  });
+  document.querySelectorAll(".colab-sueldo").forEach(inp=>{
+    inp.addEventListener("change", e=>{
+      const c = state.colaboradores.find(x=>x.id===e.target.dataset.id);
+      if(c){ c.sueldoHora = Math.max(0, Number(e.target.value)||0); saveState(); render(); }
     });
   });
 
@@ -1303,7 +2150,12 @@ function wireEvents(){
 
   // Horario
   const autoBtn = document.getElementById("autoOrganizar");
-  if(autoBtn) autoBtn.addEventListener("click", ()=>{ snapshotForUndo(); autoOrganizar(); });
+  if(autoBtn) autoBtn.addEventListener("click", ()=>{
+    snapshotForUndo(); autoOrganizar();
+    showToast("Horario organizado automáticamente", "ok", "zap");
+  });
+  const publicarBtn = document.getElementById("publicarBtn");
+  if(publicarBtn) publicarBtn.addEventListener("click", publicarHorario);
   const imprimirBtn = document.getElementById("imprimirHorario");
   if(imprimirBtn) imprimirBtn.addEventListener("click", ()=>{ window.print(); });
   const semanaLabelInput = document.getElementById("semanaLabelInput");
@@ -1311,15 +2163,22 @@ function wireEvents(){
   const filtroColabInput = document.getElementById("filtroColabInput");
   if(filtroColabInput) filtroColabInput.addEventListener("input", e=>{ state.filtroColab = e.target.value; render(); });
   const deshacerBtn = document.getElementById("deshacerBtn");
-  if(deshacerBtn) deshacerBtn.addEventListener("click", deshacer);
+  if(deshacerBtn) deshacerBtn.addEventListener("click", ()=>{
+    deshacer();
+    showToast("Cambio deshecho", "info", "undo");
+  });
   const exportarCsvBtn = document.getElementById("exportarCsv");
-  if(exportarCsvBtn) exportarCsvBtn.addEventListener("click", exportarHorarioCSV);
+  if(exportarCsvBtn) exportarCsvBtn.addEventListener("click", ()=>{
+    exportarHorarioCSV();
+    showToast("CSV exportado", "info", "download");
+  });
   const clearBtn = document.getElementById("clearHorario");
   if(clearBtn) clearBtn.addEventListener("click", ()=>{
     if(!window.confirm("¿Vaciar todo el horario semanal? Esta acción se puede deshacer con el botón Deshacer.")) return;
     snapshotForUndo();
     for(let d=0; d<7; d++) state.horario[d] = {};
     saveState(); render();
+    showToast("Horario vaciado", "warn", "eraser");
   });
   document.querySelectorAll("[data-day-copy]").forEach(sel=>{
     sel.addEventListener("change", e=>{
@@ -1334,6 +2193,7 @@ function wireEvents(){
       ensureHorarioShape();
       state.horario[destinoNum] = JSON.parse(JSON.stringify(state.horario[origen]));
       saveState(); render();
+      showToast(`Copiado ${DIAS[origen]} → ${DIAS[destinoNum]}`, "ok", "check");
     });
   });
 
